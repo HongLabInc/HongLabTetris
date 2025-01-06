@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 GameMode::GameMode()
-	: width(10),height(20)
+	: width(10),height(20), blockX(width/2), blockY(0)
 {
 	board = new char[width * height];
 }
@@ -18,10 +18,6 @@ GameMode::~GameMode()
 	}
 }
 
-void GameMode::clearScreen()
-{
-	system("cls");
-}
 
 void GameMode::initializeBoard()
 {
@@ -33,6 +29,28 @@ void GameMode::initializeBoard()
 			board[i] = ' ';
 		}
 	}
+}
+
+void GameMode::Update()
+{
+	// Move the block down
+	blockY++;
+	if(blockY >= height)
+	{
+		blockY = 0; // Reset block position to the top
+	}
+}
+
+void GameMode::Draw()
+{
+	clearScreen();
+	drawBoard();
+	drawBlock();
+}
+
+void GameMode::clearScreen()
+{
+	system("cls");
 }
 
 void GameMode::drawBoard()
@@ -48,25 +66,18 @@ void GameMode::drawBoard()
 	}
 }
 
-void GameMode::drawBlock(int oldX,int oldY,int newX,int newY)
+void GameMode::drawBlock()
 {
+	int oldY = blockY - 1;
+
 	if(oldY >= 0)
 	{
 		// note: Prevent invalid array access by ensuring oldY is non-negative
-		int idx = oldX + oldY * width;
+		int idx = blockX + oldY * width;
 		board[idx] = ' ';
 	}
 
-	int idx = newX + newY * width;
+	int idx = blockX + blockY * width;
 	board[idx] = '#';
 }
 
-const int GameMode::GetWidth() const
-{
-	return this->width;
-}
-
-const int GameMode::GetHeight() const
-{
-	return this->height;
-}

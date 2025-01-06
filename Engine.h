@@ -11,6 +11,8 @@ public:
 
 	void Run();
 
+private:
+
 	void ProcessInput();
 	void Update(float deltaTime);
 	void Draw();
@@ -22,7 +24,5 @@ private:
 
 	bool quit;
 
-	int blockX;
-	int blockY;
 };
 
