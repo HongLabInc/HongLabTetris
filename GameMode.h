@@ -1,4 +1,7 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
 
 // 기본 게임모드
 class GameMode
@@ -24,5 +27,8 @@ protected:
     const int width;
     const int height;
     char* board = nullptr;
+
+    HANDLE consoleHandle = 0;
+    CHAR_INFO* consoleBuffer = nullptr;
 };
 
