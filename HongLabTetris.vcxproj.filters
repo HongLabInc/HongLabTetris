@@ -44,5 +44,8 @@
     <ClInclude Include="GameMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BlockMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

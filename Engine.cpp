@@ -5,11 +5,9 @@
 #include <Windows.h>
 
 Engine::Engine()
-	: gameMode(nullptr),quit(false),blockX(0),blockY(0)
+	: gameMode(nullptr),quit(false)
 {
 	LoadGameMode(new GameMode());
-	blockX = gameMode->GetWidth() / 2;
-	blockY = 0;
 }
 
 Engine::~Engine()
@@ -40,7 +38,7 @@ void Engine::Run()
 	int64_t currentTime = 0;
 	int64_t previousTime = counter.QuadPart;
 
-	float targetFrameRate = 60.0f;
+	float targetFrameRate = 5.0f; // 목표 fps
 	float targetOneFrameTime = 1.0f / targetFrameRate;
 
 	// Main Game Loop
@@ -74,21 +72,14 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	// Move the block down
-	blockY++;
-	if(blockY >= gameMode->GetHeight())
-	{
-		blockY = 0; // Reset block position to the top
-	}
+	gameMode->Update();
 
-	Sleep(500);
+	//Sleep(500);
 }
 
 void Engine::Draw()
 {
-	gameMode->clearScreen();
-	gameMode->drawBlock(blockX,blockY - 1,blockX,blockY);
-	gameMode->drawBoard();
+	gameMode->Draw();
 }
 
 void Engine::QuitGame()

@@ -134,6 +134,7 @@
     <ClCompile Include="HongLabTetris.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BlockMap.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Engine.h" />
