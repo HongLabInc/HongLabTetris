@@ -15,6 +15,7 @@ public:
 
     void MoveBlockLeft();
     void MoveBlockRight();
+    void MoveBlockDown();
 
 protected:
     void clearScreen();

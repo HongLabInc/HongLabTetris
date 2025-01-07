@@ -81,6 +81,14 @@ void GameMode::MoveBlockRight()
 	else blockX++;
 }
 
+void GameMode::MoveBlockDown()
+{
+	int idx = blockX + blockY * width;
+	board[idx] = ' ';
+
+	blockY = height - 3;
+}
+
 void GameMode::clearScreen()
 {
 	system("cls");
