@@ -7,17 +7,24 @@ GameMode::GameMode()
 	: width(10),height(20), blockX(width/2), blockY(0)
 {
 	board = new char[width * height];
+	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleActiveScreenBuffer(consoleHandle);
+	CONSOLE_CURSOR_INFO cursorInfo = {1, false};
+	SetConsoleCursorInfo(consoleHandle, &cursorInfo);
+	consoleBuffer = new CHAR_INFO[width * height]();
+	for(int i = 0; i < width * height; ++i)
+	{
+		consoleBuffer[i].Attributes = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+	}
 }
 
 GameMode::~GameMode()
 {
-	if(board != nullptr)
-	{
-		delete board;
-		board = nullptr;
-	}
+	delete board;
+	board = nullptr;
+	delete consoleBuffer;
+	consoleBuffer = nullptr;
 }
-
 
 void GameMode::initializeBoard()
 {
@@ -56,27 +63,18 @@ void GameMode::Update()
 
 void GameMode::Draw()
 {
-	clearScreen();
 	drawBoard();
 	drawBlock();
 }
 
-void GameMode::clearScreen()
-{
-	system("cls");
-}
-
 void GameMode::drawBoard()
 {
-	for(int y = 0; y < height; y++)
+	for(int i = 0; i < width * height; ++i)
 	{
-		for(int x = 0; x < width; x++)
-		{
-			int idx = x + y * width;
-			std::cout << board[idx];
-		}
-		std::cout << std::endl;
+		consoleBuffer[i].Char.AsciiChar = board[i];
 	}
+	SMALL_RECT writeArea = {0, 0, (SHORT)width - 1, (SHORT)height - 1};
+	WriteConsoleOutputA(consoleHandle, consoleBuffer, {(SHORT)width, (SHORT)height}, {}, &writeArea);
 }
 
 void GameMode::drawBlock()
