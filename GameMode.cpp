@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 GameMode::GameMode()
-	: width(10),height(20)
+	: width(10),height(20), blockX(width/2), blockY(0)
 {
 	board = new char[width * height];
 	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -26,10 +26,6 @@ GameMode::~GameMode()
 	consoleBuffer = nullptr;
 }
 
-void GameMode::clearScreen()
-{
-}
-
 void GameMode::initializeBoard()
 {
 	for(int y = 0; y < height; y++)
@@ -37,9 +33,38 @@ void GameMode::initializeBoard()
 		for(int x = 0; x < width; x++)
 		{
 			int i = x + y * width;
-			board[i] = ' ';
+
+			// Set left and right
+			if(x == 0 || x == width - 1)
+			{
+				board[i] = '#';
+			}
+			// Set bottom
+			else if(y == height - 1)
+			{
+				board[i] = '#';
+			} else
+			{
+				board[i] = ' ';
+			}
 		}
 	}
+}
+
+void GameMode::Update()
+{
+	// Move the block down
+	blockY++;
+	if(blockY >= height)
+	{
+		blockY = 0; // Reset block position to the top
+	}
+}
+
+void GameMode::Draw()
+{
+	drawBoard();
+	drawBlock();
 }
 
 void GameMode::drawBoard()
@@ -52,25 +77,18 @@ void GameMode::drawBoard()
 	WriteConsoleOutputA(consoleHandle, consoleBuffer, {(SHORT)width, (SHORT)height}, {}, &writeArea);
 }
 
-void GameMode::drawBlock(int oldX,int oldY,int newX,int newY)
+void GameMode::drawBlock()
 {
+	int oldY = blockY - 1;
+
 	if(oldY >= 0)
 	{
 		// note: Prevent invalid array access by ensuring oldY is non-negative
-		int idx = oldX + oldY * width;
+		int idx = blockX + oldY * width;
 		board[idx] = ' ';
 	}
 
-	int idx = newX + newY * width;
+	int idx = blockX + blockY * width;
 	board[idx] = '#';
 }
 
-const int GameMode::GetWidth() const
-{
-	return this->width;
-}
-
-const int GameMode::GetHeight() const
-{
-	return this->height;
-}

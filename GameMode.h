@@ -10,25 +10,28 @@ public:
     GameMode();
     ~GameMode();
 
-    void clearScreen();
-
     void initializeBoard();
+    
+    void Update();
 
+    void Draw();
+
+protected:
     void drawBoard();
-
     // Draw block and clear previous position
-    void drawBlock(int oldX,int oldY,
-        int newX,int newY);
+    void drawBlock();
 
-    const int GetWidth() const;
-    const int GetHeight() const;
 
 protected:
     const int width;
     const int height;
     char* board = nullptr;
 
+    int blockX;
+    int blockY;
+
     HANDLE consoleHandle = 0;
     CHAR_INFO* consoleBuffer = nullptr;
+
 };
 
