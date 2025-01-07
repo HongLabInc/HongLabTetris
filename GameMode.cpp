@@ -26,7 +26,20 @@ void GameMode::initializeBoard()
 		for(int x = 0; x < width; x++)
 		{
 			int i = x + y * width;
-			board[i] = ' ';
+
+			// Set left and right
+			if(x == 0 || x == width - 1)
+			{
+				board[i] = '#';
+			}
+			// Set bottom
+			else if(y == height - 1)
+			{
+				board[i] = '#';
+			} else
+			{
+				board[i] = ' ';
+			}
 		}
 	}
 }
