@@ -1,4 +1,5 @@
 #pragma once
+#include "PlayerController.h"
 
 class GameMode;
 class Engine
@@ -21,6 +22,7 @@ private:
 
 private:
 	GameMode* gameMode = nullptr;
+	PlayerController* playerController;  // add controller
 
 	bool quit;
 

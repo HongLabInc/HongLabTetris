@@ -61,6 +61,26 @@ void GameMode::Draw()
 	drawBlock();
 }
 
+void GameMode::MoveBlockLeft()
+{
+	int idx = blockX + blockY * width;
+	board[idx] = ' ';
+
+	if(blockX <= 0) 
+		blockX = 0;
+	else blockX--;
+}
+
+void GameMode::MoveBlockRight()
+{
+	int idx = blockX + blockY * width;
+	board[idx] = ' ';
+
+	if(blockX >= width)
+		blockX = width;
+	else blockX++;
+}
+
 void GameMode::clearScreen()
 {
 	system("cls");

@@ -5,9 +5,10 @@
 #include <Windows.h>
 
 Engine::Engine()
-	: gameMode(nullptr),quit(false)
+	: gameMode(nullptr), playerController(nullptr), quit(false)
 {
 	LoadGameMode(new GameMode());
+	playerController = new PlayerController(gameMode);
 }
 
 Engine::~Engine()
@@ -68,7 +69,9 @@ void Engine::Run()
 }
 
 void Engine::ProcessInput()
-{}
+{
+	playerController->ProcessInput();
+}
 
 void Engine::Update(float deltaTime)
 {

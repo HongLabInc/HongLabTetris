@@ -13,6 +13,9 @@ public:
 
     void Draw();
 
+    void MoveBlockLeft();
+    void MoveBlockRight();
+
 protected:
     void clearScreen();
     void drawBoard();
