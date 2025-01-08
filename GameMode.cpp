@@ -73,8 +73,8 @@ void GameMode::MoveBlockLeft()
 	int idx = blockX + blockY * width;
 	board[idx] = ' ';
 
-	if(blockX <= 0) 
-		blockX = 0;
+	if(blockX <= 1) 
+		blockX = 1;
 	else blockX--;
 }
 
@@ -83,8 +83,8 @@ void GameMode::MoveBlockRight()
 	int idx = blockX + blockY * width;
 	board[idx] = ' ';
 
-	if(blockX >= width)
-		blockX = width;
+	if(blockX  >= width - 2)
+		blockX = width - 2;
 	else blockX++;
 }
 
@@ -96,10 +96,6 @@ void GameMode::MoveBlockDown()
 	blockY = height - 3;
 }
 
-void GameMode::clearScreen()
-{
-	system("cls");
-}
 
 
 void GameMode::drawBoard()
