@@ -16,6 +16,10 @@ public:
 
     void Draw();
 
+    void MoveBlockLeft();
+    void MoveBlockRight();
+    void MoveBlockDown();
+
 protected:
     void drawBoard();
     // Draw block and clear previous position
