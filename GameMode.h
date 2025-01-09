@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
+#include "Board.h"
 
 // 기본 게임모드
 class GameMode
@@ -22,20 +23,16 @@ public:
 
 protected:
     void drawBoard();
-    // Draw block and clear previous position
-    void drawBlock();
+    void drawBlock(); // Draw block and clear previous position
 
-
-protected:
     const int width;
     const int height;
-    char* board = nullptr;
+    Board board;
 
     int blockX;
     int blockY;
 
     HANDLE consoleHandle = 0;
     CHAR_INFO* consoleBuffer = nullptr;
-
 };
 
