@@ -1,19 +1,45 @@
-﻿#pragma once
+#pragma once
 
-enum class CellType {
-	None = -1,
-	Empty = 0,
-	Border,
-	Block
-};
+#include <Windows.h>
+#include "ConsoleColor.h"
 
-// TODO: Color 및 다른 기능을 추가로 적용 가능하도록 struct로 수정
-struct Cell {
-	Cell(CellType type = CellType::Empty) : Type(type) {}
+class Cell
+{
+public:
+	enum class Type
+	{
+		None = -1,
+		Empty,
+		Border,
+		Block
+	};
 
-	static const Cell None;
-	static const Cell Empty;
-	static const Cell Border;
+	Cell() = default;
+	Cell(Type type);
+	Cell(Type type, WCHAR c);
+	Cell(Type type, WCHAR c, WORD colorAttr);
+	Cell(WORD colorAttr);
+	~Cell() = default;
 
-	CellType Type = CellType::Empty;
+	CHAR_INFO ToCharInfo() const; // WinAPI 호출에 필요한 CHAR_INFO로 변환
+
+	Type GetType() const;
+	void SetType(Type type);
+
+	WCHAR GetChar() const;
+	void  SetChar(WCHAR c);
+
+	WORD GetAttributes() const;
+	void SetAttributes(WORD ColorAttr);
+
+	static const Cell emptyCell;
+	static const Cell borderCell;
+	static const Cell blockCell;
+
+	static constexpr WCHAR CHAR_BLOCK = L' ';
+
+private:
+	Type  mType = Type::Block; //셀 타입(상태)
+	WCHAR mChar = CHAR_BLOCK; // 표시문자
+	WORD  mColorAttr = static_cast<WORD>(ConsoleColor::BrightWhite) << 4; // 셀 색상
 };

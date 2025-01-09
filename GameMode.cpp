@@ -1,54 +1,34 @@
 #include "GameMode.h"
+#include "ConsoleColor.h"
 
 #include <iostream>
 #include <Windows.h>
 
 GameMode::GameMode()
-	: width(10),height(20), blockX(width/2), blockY(0)
+	: width(10)
+	, height(20)
+	, board(Board(width, height))
+	, blockX(width / 2)
+	, blockY(0)
 {
-	board = new char[width * height];
 	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleActiveScreenBuffer(consoleHandle);
+
 	CONSOLE_CURSOR_INFO cursorInfo = {1, false};
 	SetConsoleCursorInfo(consoleHandle, &cursorInfo);
+
 	consoleBuffer = new CHAR_INFO[width * height]();
-	for(int i = 0; i < width * height; ++i)
-	{
-		consoleBuffer[i].Attributes = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-	}
 }
 
 GameMode::~GameMode()
 {
-	delete board;
-	board = nullptr;
 	delete consoleBuffer;
 	consoleBuffer = nullptr;
 }
 
 void GameMode::initializeBoard()
 {
-	for(int y = 0; y < height; y++)
-	{
-		for(int x = 0; x < width; x++)
-		{
-			int i = x + y * width;
-
-			// Set left and right
-			if(x == 0 || x == width - 1)
-			{
-				board[i] = '#';
-			}
-			// Set bottom
-			else if(y == height - 1)
-			{
-				board[i] = '#';
-			} else
-			{
-				board[i] = ' ';
-			}
-		}
-	}
+	// 초기화 코드 (프로그램 실행 직후 Engine 클래스에서 Run 메소드 호출시 initializeBoard 호출)
 }
 
 void GameMode::Update()
@@ -70,8 +50,10 @@ void GameMode::Draw()
 
 void GameMode::MoveBlockLeft()
 {
-	int idx = blockX + blockY * width;
-	board[idx] = ' ';
+	//int idx = blockX + blockY * width;
+
+	//board[idx] = ' ';
+	board.SetCell(blockX, blockY, Cell::emptyCell);
 
 	if(blockX <= 1) 
 		blockX = 1;
@@ -80,8 +62,9 @@ void GameMode::MoveBlockLeft()
 
 void GameMode::MoveBlockRight()
 {
-	int idx = blockX + blockY * width;
-	board[idx] = ' ';
+	//int idx = blockX + blockY * width;
+	//board[idx] = ' ';
+	board.SetCell(blockX, blockY, Cell::emptyCell);
 
 	if(blockX  >= width - 2)
 		blockX = width - 2;
@@ -90,8 +73,9 @@ void GameMode::MoveBlockRight()
 
 void GameMode::MoveBlockDown()
 {
-	int idx = blockX + blockY * width;
-	board[idx] = ' ';
+	//int idx = blockX + blockY * width;
+	//board[idx] = ' ';
+	board.SetCell(blockX, blockY, Cell::emptyCell);
 
 	blockY = height - 3;
 }
@@ -100,12 +84,18 @@ void GameMode::MoveBlockDown()
 
 void GameMode::drawBoard()
 {
-	for(int i = 0; i < width * height; ++i)
+	for(int y = 0; y < height; ++y)
 	{
-		consoleBuffer[i].Char.AsciiChar = board[i];
+		for(int x = 0; x < width; ++x)
+		{
+			const int index = x + y * width;
+			const Cell* cell = board.GetCellPtr(x, y);
+
+			consoleBuffer[index] = cell->ToCharInfo();
+		}
 	}
 	SMALL_RECT writeArea = {0, 0, (SHORT)width - 1, (SHORT)height - 1};
-	WriteConsoleOutputA(consoleHandle, consoleBuffer, {(SHORT)width, (SHORT)height}, {}, &writeArea);
+	WriteConsoleOutputW(consoleHandle, consoleBuffer, {(SHORT)width, (SHORT)height}, {}, &writeArea);
 }
 
 void GameMode::drawBlock()
@@ -115,11 +105,12 @@ void GameMode::drawBlock()
 	if(oldY >= 0)
 	{
 		// note: Prevent invalid array access by ensuring oldY is non-negative
-		int idx = blockX + oldY * width;
-		board[idx] = ' ';
+		//int idx = blockX + oldY * width;
+		//board[idx] = ' ';
+		board.SetCell(blockX, oldY, Cell::emptyCell);
 	}
 
-	int idx = blockX + blockY * width;
-	board[idx] = '#';
+	//int idx = blockX + blockY * width;
+	//board[idx] = '#';
+	board.SetCell(blockX, blockY, Cell::blockCell);
 }
-
