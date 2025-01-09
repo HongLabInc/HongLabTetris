@@ -10,7 +10,7 @@ Engine::Engine()
 	LoadGameMode(new GameMode());
 	inputManager = new InputManager();
 }
-
+ 
 Engine::~Engine()
 {
 	if(gameMode != nullptr)
