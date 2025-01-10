@@ -11,7 +11,6 @@ GameMode::GameMode()
 	, blockX(width / 2)
 	, blockY(0)
 {
-	board = new char[width * height];
 	frame = new char[width * height];
     
 	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -75,8 +74,6 @@ void GameMode::clearFrame()
 }
 
 
-
-
 void GameMode::MoveBlockLeft()
 {
 	//int idx = blockX + blockY * width;
@@ -118,19 +115,16 @@ void GameMode::drawBoard()
 {
 	for(int y = 0; y < height; ++y)
 	{
-		frame[i] = board[i];
-	}
-	
 		for(int x = 0; x < width; ++x)
 		{
 			const int index = x + y * width;
 			const Cell* cell = board.GetCellPtr(x, y);
 
+			frame[index] = cell->ToCharInfo().Char.AsciiChar;
+
 			consoleBuffer[index] = cell->ToCharInfo();
 		}
 	}
-	SMALL_RECT writeArea = {0, 0, (SHORT)width - 1, (SHORT)height - 1};
-	WriteConsoleOutputW(consoleHandle, consoleBuffer, {(SHORT)width, (SHORT)height}, {}, &writeArea);
 }
 
 
@@ -157,31 +151,18 @@ void GameMode::drawBlock()
 	}
 	
 
-	int oldY = blockY - 1;
-
-	if(oldY >= 0)
-	{
-		// note: Prevent invalid array access by ensuring oldY is non-negative
-		int idx = blockX + oldY * width;
-		frame[idx] = ' ';
-	}
-
-	int idx = blockX + blockY * width;
-	frame[idx] = '#';
-
-
 	for(int i = 0; i < width * height; ++i) {
-		consoleBuffer[i].Char.AsciiChar = frame[i];
-	}
-
-	SMALL_RECT writeArea = {0,0,(SHORT)width - 1,(SHORT)height - 1};
-	WriteConsoleOutputA(consoleHandle,consoleBuffer,{(SHORT)width,(SHORT)height},{},&writeArea);
-		//int idx = blockX + oldY * width;
-		//board[idx] = ' ';
-		board.SetCell(blockX, oldY, Cell::emptyCell);
+		if(frame[i] == 1) {
+			consoleBuffer[i].Attributes = static_cast<WORD>(ConsoleColor::BrightBlue) << 4;
+			consoleBuffer[i].Char.AsciiChar = 1;
+		}
 	}
 
 	//int idx = blockX + blockY * width;
 	//board[idx] = '#';
-	board.SetCell(blockX, blockY, Cell::blockCell);
+
+	SMALL_RECT writeArea = {0,0,(SHORT)width - 1,(SHORT)height - 1};
+	WriteConsoleOutputA(consoleHandle,consoleBuffer,{(SHORT)width,(SHORT)height},{},&writeArea);
+
+	
 }
