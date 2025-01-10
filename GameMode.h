@@ -35,11 +35,9 @@ protected:
     const int width;
     const int height;
 
-    char* board = nullptr;
     char* frame = nullptr;
 
     Board board;
-
 
     int blockX;
     int blockY;
