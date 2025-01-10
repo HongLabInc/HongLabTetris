@@ -4,6 +4,8 @@
 #include <Windows.h>
 #include "Block.h"
 #include "InputManager.h"
+#include "Board.h"
+
 
 // 기본 게임모드
 class GameMode
@@ -28,15 +30,16 @@ public:
 
 protected:
     void drawBoard();
-    // Draw block and clear previous position
-    void drawBlock();
+    void drawBlock(); // Draw block and clear previous position
 
-
-protected:
     const int width;
     const int height;
+
     char* board = nullptr;
     char* frame = nullptr;
+
+    Board board;
+
 
     int blockX;
     int blockY;
@@ -45,6 +48,5 @@ protected:
     CHAR_INFO* consoleBuffer = nullptr;
 
     Block* cur_Block = nullptr;
-
 };
 
