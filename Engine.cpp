@@ -5,12 +5,12 @@
 #include <Windows.h>
 
 Engine::Engine()
-	: gameMode(nullptr), playerController(nullptr), quit(false)
+	: gameMode(nullptr), quit(false)
 {
 	LoadGameMode(new GameMode());
-	playerController = new PlayerController(gameMode);
+	inputManager = new InputManager();
 }
-
+ 
 Engine::~Engine()
 {
 	if(gameMode != nullptr)
@@ -70,12 +70,13 @@ void Engine::Run()
 
 void Engine::ProcessInput()
 {
-	playerController->ProcessInput();
+	inputManager->Update();
 }
 
 void Engine::Update(float deltaTime)
 {
-	gameMode->Update();
+	inputManager->Update();
+	gameMode->Update(inputManager);
 
 	//Sleep(500);
 }
