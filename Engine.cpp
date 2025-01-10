@@ -4,10 +4,13 @@
 #include <iostream>
 #include <Windows.h>
 
-Engine::Engine()
-	: gameMode(nullptr), quit(false)
+Engine::Engine(ConsoleRenderer& renderer)
+	: consoleRenderer(renderer)
+	, gameMode(nullptr)
+	, quit(false)
 {
-	LoadGameMode(new GameMode());
+	LoadGameMode(new GameMode(renderer, GameMode::GameModeType::Single));
+
 	inputManager = new InputManager();
 }
  
@@ -27,8 +30,6 @@ void Engine::LoadGameMode(GameMode * newGameMode)
 
 void Engine::Run()
 {
-	gameMode->initializeBoard();
-
 	// 고해상도 카운터
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
@@ -75,7 +76,6 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	inputManager->Update();
 	gameMode->Update(inputManager);
 
 	//Sleep(500);
