@@ -2,49 +2,33 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
-#include "Block.h"
+#include <vector>
+#include "TetrisBoard.h"
+#include "ConsoleRenderer.h"
 #include "InputManager.h"
-#include "Board.h"
 
-
-// 기본 게임모드
 class GameMode
 {
 public:
-    GameMode();
-    ~GameMode();
+    enum class GameModeType
+    {
+        Single,
+        Multiplayer
+    };
+    GameMode(ConsoleRenderer& renderer, GameModeType mode);
+    ~GameMode() = default;
 
-    void initializeBoard();
-    void initailizeFrame();
-    
     void Update(InputManager* im);
-
     void Draw();
-    void clearFrame();
 
-    void MoveBlockLeft();
-    void MoveBlockRight();
-    void MoveBlockDown();
+private:
+	void SetupSingleMode();
+	void SetupMultiplayerMode();
 
-    void Instantiate(Block* block, int x);
+    void ShowExampleConsoleFrame(); // 임시 함수
 
-protected:
-    void drawBoard();
-    void drawBlock(); // Draw block and clear previous position
+    ConsoleRenderer& mRenderer;
+    std::vector<TetrisBoard> mBoards;
+    GameModeType mCurrentMode;
 
-    const int width;
-    const int height;
-
-    char* frame = nullptr;
-
-    Board board;
-
-    int blockX;
-    int blockY;
-
-    HANDLE consoleHandle = 0;
-    CHAR_INFO* consoleBuffer = nullptr;
-
-    Block* cur_Block = nullptr;
 };
-

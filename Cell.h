@@ -36,7 +36,8 @@ public:
 	static const Cell borderCell;
 	static const Cell blockCell;
 
-	static constexpr WCHAR CHAR_BLOCK = L' ';
+	static constexpr WCHAR CHAR_EMPTY = L' '; // 공백
+	static constexpr WCHAR CHAR_BLOCK = L' '; // 현재는 BLOCK도 공백으로 사용중
 
 private:
 	Type  mType = Type::Block; //셀 타입(상태)

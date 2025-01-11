@@ -17,7 +17,7 @@ class Block {
 
 public:
 	Block(int posX, int posY);
-	~Block();
+	~Block() = default;
 
 	void Initalize();
 	void Update(InputManager* InputMgr);

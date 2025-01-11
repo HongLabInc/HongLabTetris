@@ -1,6 +1,6 @@
 #include "Cell.h"
 
-const Cell Cell::emptyCell(Cell::Type::Empty, Cell::CHAR_BLOCK, static_cast<WORD>(ConsoleColor::Black));
+const Cell Cell::emptyCell(Cell::Type::Empty, Cell::CHAR_EMPTY, static_cast<WORD>(ConsoleColor::Black));
 const Cell Cell::borderCell(Cell::Type::Border);
 const Cell Cell::blockCell(Cell::Type::Block);
 
