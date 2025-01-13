@@ -172,7 +172,7 @@ void TetrisBoard::MoveLines() {
 
             rowCounts[sourceLine] = 0;
             std::fill(isFilled[sourceLine].begin() + 1,isFilled[sourceLine].end() - 1,false);
-
+             
             targetLine--;
             sourceLine--;
         } else if(!rowCounts[sourceLine])
