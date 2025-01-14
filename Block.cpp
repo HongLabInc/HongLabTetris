@@ -212,6 +212,7 @@ void Block::Initalize() {
 	int randomNumber = distr(gen);
 
 	memcpy(block,blockModel[randomNumber],sizeof(blockModel[randomNumber]));
+	memcpy(prevShape,blockModel[randomNumber],sizeof(blockModel[randomNumber]));
 
 }
 
@@ -230,38 +231,43 @@ int Block::GetY()
 	return y;
 }
 
-void Block::MoveBlockLeft()
+void Block::MoveLeft()
 {
 	x--;
 }
-void Block::MoveBlockRight()
+void Block::MoveRight()
 {
 	x++;
 }
-void Block::MoveBlockDown()
+void Block::MoveDown()
 {
-	y = 15;
+	y ++;
 }
+
+
 
 
 
 void Block::Rotate() {
 
-	mat4x4 temp;
-	memset(temp,0,sizeof(temp));
+	memcpy(prevShape,block,sizeof(prevShape));
+
+	mat4x4 temp = {0};  // 임시 배열 초기화
+
+	// 90도 시계 방향 회전 로직
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 4; j++) {
-			if(block[i][j] == 1) {
-				temp[3 - j][i] = block[i][j];
-			}
+			temp[j][3 - i] = block[i][j];
 		}
 	}
 
-	memcpy(block, temp, sizeof(temp));
+	// 회전 결과를 block에 복사
+	memcpy(block,temp,sizeof(temp));
 }
 
 void Block::rollback()
 {
+	memcpy(block,prevShape,sizeof(prevShape));
 	x = prevX;
 	y = prevY;
 }
@@ -269,6 +275,7 @@ void Block::rollback()
 void Block::UpdatePos() {
 	prevX = x;
 	prevY = y;
+	memcpy(prevShape,block,sizeof(prevShape));  // 현재 블록 상태 저장
 }
 
 const mat4x4& Block::GetShape() const

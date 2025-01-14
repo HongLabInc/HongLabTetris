@@ -54,13 +54,19 @@ void TetrisBoard::Update(InputManager* im)
     // Input Block Move
     mCurrentBlock->UpdatePos();
 
-    if(im->IsKeyPressed(VK_LEFT)) mCurrentBlock->MoveBlockLeft();
-    else if(im->IsKeyPressed(VK_RIGHT)) mCurrentBlock->MoveBlockRight();
-    else if(im->IsKeyPressed(VK_DOWN)) mCurrentBlock->MoveBlockDown();
+    if(im->IsKeyPressed(VK_LEFT)) mCurrentBlock->MoveLeft();
+    else if(im->IsKeyPressed(VK_RIGHT)) mCurrentBlock->MoveRight();
     else if(im->IsKeyPressed(VK_UP)) mCurrentBlock->Rotate();
-    if(CheckCollision()) {
-        mCurrentBlock->rollback();
+    else if(im->IsKeyPressed(VK_DOWN)) {
+        while(!CheckCollision()) {
+            mCurrentBlock->UpdatePos();
+            mCurrentBlock->MoveDown();
+        }
     }
+    if(CheckCollision())
+        mCurrentBlock->rollback();
+   
+ 
 
 
     // Update Basic Move
