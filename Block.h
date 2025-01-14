@@ -12,6 +12,7 @@ extern mat4x4 blockModel[28];
 class Block {
 	mat4x4 block;
 	
+	int prevX,prevY;
 	int x,y;
 
 
@@ -20,7 +21,7 @@ public:
 	~Block() = default;
 
 	void Initalize();
-	void Update(InputManager* InputMgr);
+	void Update();
 	
 	int GetX ();
 	int GetY ();
@@ -28,8 +29,13 @@ public:
 	void MoveBlockLeft();
 	void MoveBlockRight();
 	void MoveBlockDown();
-	
+
+
+
 	void Rotate();
+	void rollback();
+
+	void UpdatePos();
 
 	const mat4x4& GetShape() const;
 };

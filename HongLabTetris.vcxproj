@@ -128,21 +128,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Block.cpp" />
-    <ClCompile Include="Board.cpp" />
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="ConsoleFrame.cpp" />
+    <ClCompile Include="ConsoleRenderer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="HongLabTetris.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="TetrisBoard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockMap.h" />
-    <ClInclude Include="Board.h" />
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="ConsoleFrame.h" />
+    <ClInclude Include="ConsoleRenderer.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="TetrisBoard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

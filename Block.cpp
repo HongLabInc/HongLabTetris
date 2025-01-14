@@ -215,12 +215,8 @@ void Block::Initalize() {
 
 }
 
-void Block::Update(InputManager* inputMgr)
+void Block::Update()
 {
-	if(inputMgr->IsKeyPressed(VK_LEFT)) MoveBlockLeft();
-	else if(inputMgr->IsKeyPressed(VK_RIGHT)) MoveBlockRight();
-	else if(inputMgr->IsKeyPressed(VK_DOWN)) MoveBlockDown();
-	else if(inputMgr->IsKeyPressed(VK_UP)) Rotate();
 	y++;
 }
 
@@ -247,6 +243,8 @@ void Block::MoveBlockDown()
 	y = 15;
 }
 
+
+
 void Block::Rotate() {
 
 	mat4x4 temp;
@@ -260,6 +258,17 @@ void Block::Rotate() {
 	}
 
 	memcpy(block, temp, sizeof(temp));
+}
+
+void Block::rollback()
+{
+	x = prevX;
+	y = prevY;
+}
+
+void Block::UpdatePos() {
+	prevX = x;
+	prevY = y;
 }
 
 const mat4x4& Block::GetShape() const
