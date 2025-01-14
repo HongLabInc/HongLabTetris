@@ -10,7 +10,9 @@ extern mat4x4 blockModel[28];
 
 
 class Block {
+	mat4x4 prevShape;
 	mat4x4 block;
+	
 	
 	int prevX,prevY;
 	int x,y;
@@ -26,9 +28,9 @@ public:
 	int GetX ();
 	int GetY ();
 
-	void MoveBlockLeft();
-	void MoveBlockRight();
-	void MoveBlockDown();
+	void MoveLeft();
+	void MoveRight();
+	void MoveDown();
 
 
 
