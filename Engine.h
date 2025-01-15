@@ -1,6 +1,7 @@
 #pragma once
 #include "InputManager.h"
 #include "ConsoleRenderer.h"
+#include "ModelPointer.h"
 
 class GameMode;
 class Engine
@@ -11,6 +12,7 @@ public:
 
 	void LoadGameMode(GameMode* newGameMode);
 
+	void Initailize();
 	void Run();
 
 private:

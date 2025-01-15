@@ -137,6 +137,7 @@
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="HongLabTetris.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="ModelPointer.cpp" />
     <ClCompile Include="TetrisBoard.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +150,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="ModelPointer.h" />
     <ClInclude Include="TetrisBoard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
