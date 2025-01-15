@@ -1,8 +1,11 @@
 #include "TetrisBoard.h"
 #include "ConsoleColor.h"
 
-TetrisBoard::TetrisBoard(ConsoleRenderer& renderer,int x,int y,int width,int height)
-    : mWidth(width),mHeight(height),mCurrentBlock(nullptr)
+TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height)
+    : mWidth(width)
+    ,mHeight(height)
+    ,mCurrentBlock(nullptr)
+    ,mRenderer(renderer)
 {
     mFrame = renderer.AddFrame(x, y, width, height);
     isFilled = std::vector<std::vector<bool>>(height, std::vector<bool>(width,false));
@@ -17,6 +20,7 @@ TetrisBoard::TetrisBoard(ConsoleRenderer& renderer,int x,int y,int width,int hei
 TetrisBoard::~TetrisBoard()
 {
     delete mCurrentBlock; // 블록 제거
+    mRenderer.RemoveFrame(mFrame);
 }
 
 void TetrisBoard::Init()
@@ -25,7 +29,6 @@ void TetrisBoard::Init()
     mFrame->DrawRectangle(0, 0, mWidth, mHeight, Cell::borderCell);
     mFrame->FillRectangle(1, 1, mWidth - 2, mHeight - 2, Cell::emptyCell);
     InitBoard(0, 0, mWidth, mHeight);
-
 }
 
 void TetrisBoard::InitBoard(int x,int y,int width,int height) {
@@ -50,34 +53,76 @@ void TetrisBoard::Update(InputManager* im)
 {
     Instantiate();
    
+    if (mIsButtonHeld == true
+        && im->IsKeyPressed(VK_LEFT) == false
+        && im->IsKeyPressed(VK_RIGHT) == false
+        && im->IsKeyPressed(VK_UP) == false
+        && im->IsKeyPressed(VK_DOWN) == false
+        )
+    {
+        mIsButtonHeld = false;
+    }
 
-    // Input Block Move
-    mCurrentBlock->UpdatePos();
+    if (mIsButtonHeld == false)
+    {
+        mContinuousInputFramesLeft = 0;
+    }
 
-    if(im->IsKeyPressed(VK_LEFT)) mCurrentBlock->MoveLeft();
-    else if(im->IsKeyPressed(VK_RIGHT)) mCurrentBlock->MoveRight();
-    else if(im->IsKeyPressed(VK_UP)) mCurrentBlock->Rotate();
-    else if(im->IsKeyPressed(VK_DOWN)) {
-        while(!CheckCollision()) {
-            mCurrentBlock->UpdatePos();
-            mCurrentBlock->MoveDown();
+    if (mFirstInputFramesLeft <= 0 && mContinuousInputFramesLeft <= 0)
+    {
+        // Input Block Move
+        mCurrentBlock->UpdatePos();
+
+        if (im->IsKeyPressed(VK_LEFT)) mCurrentBlock->MoveLeft();
+        else if (im->IsKeyPressed(VK_RIGHT)) mCurrentBlock->MoveRight();
+        else if (im->IsKeyPressed(VK_UP)) mCurrentBlock->Rotate();
+        else if (im->IsKeyPressed(VK_DOWN)) {
+            while (!CheckCollision()) {
+                mCurrentBlock->UpdatePos();
+                mCurrentBlock->MoveDown();
+            }
+        }
+
+        if (CheckCollision())
+            mCurrentBlock->rollback();
+
+        mFirstInputFramesLeft = mFirstInputDelayFrames;
+        if (mIsButtonHeld == false)
+        {
+			mContinuousInputFramesLeft = mContinuousInputDelayFrames;
+			mIsButtonHeld = true;
         }
     }
-    if(CheckCollision())
-        mCurrentBlock->rollback();
+    else
+    {
+		if (mFirstInputFramesLeft > 0)
+		{
+			--mFirstInputFramesLeft;
+		}
+        if (mContinuousInputFramesLeft > 0)
+        {
+			--mContinuousInputFramesLeft;
+        }
+    }
    
  
+    if (mFramesUntilUpdate <= 0)
+    {
+        // Update Basic Move
+        mCurrentBlock->UpdatePos();
+        mCurrentBlock->Update();
 
+        if (CheckCollision()) {
 
-    // Update Basic Move
-    mCurrentBlock->UpdatePos();
-    mCurrentBlock->Update();
-
-    if(CheckCollision()) {
-        
-        mCurrentBlock->rollback();
-        LockBlock();
-        mCurrentBlock = nullptr;
+            mCurrentBlock->rollback();
+            LockBlock();
+            mCurrentBlock = nullptr;
+        }
+        mFramesUntilUpdate = mUpdateInterval;
+    }
+    else
+    {
+        --mFramesUntilUpdate;
     }
 
     CheckLines();

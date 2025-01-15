@@ -7,7 +7,7 @@ class ConsoleFrame;
 class ConsoleRenderer
 {
 public:
-    ConsoleRenderer(int width, int height);
+    ConsoleRenderer(int width, int height, float frameRate);
     ~ConsoleRenderer();
 
     void Clear();
@@ -18,6 +18,9 @@ public:
     void RemoveFrame(ConsoleFrame* frame);
 
     ConsoleFrame* GetMainFrame();
+
+    float GetFrameRate() const;
+    float GetFrameTime() const;
 
     void SetBuffer(int row, int column, CHAR_INFO charInfo);
     void Render();
@@ -33,6 +36,8 @@ private:
     int mWidth;
     int mHeight;
     int mActualWidth; //공백(LEFT, RIGHT SPACE)포함 실제 너비
+    float mFrameRate;
+    float mFrameTime;
     HANDLE mConsoleHandle;
     CHAR_INFO* mBuffer;
 

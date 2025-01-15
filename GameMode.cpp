@@ -19,7 +19,6 @@ GameMode::GameMode(ConsoleRenderer& renderer, GameModeType mode)
     }
 }
 
-
 void GameMode::Update(InputManager* im)
 {
     for(auto& board : mBoards)
@@ -40,10 +39,10 @@ void GameMode::Draw()
 
 void GameMode::SetupSingleMode()
 {
-	mBoards.push_back(TetrisBoard(mRenderer, 3, 3, 12, 24));
+	mBoards.emplace_back(mRenderer, 3, 3, 12, 24);
 
 	//임시 출력 테스트
-	ShowExampleConsoleFrame();
+	//ShowExampleConsoleFrame();
 }
 
 void GameMode::SetupMultiplayerMode()
@@ -54,7 +53,7 @@ void GameMode::SetupMultiplayerMode()
 
 
 
-
+// ConsoleFrame 출력 테스트용 예시, 추후 지워도 되는 함수입니다.
 void GameMode::ShowExampleConsoleFrame()
 {
 	ConsoleFrame* titleFrame = mRenderer.AddFrame(18, 5, 30, 10);

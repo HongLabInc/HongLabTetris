@@ -40,8 +40,8 @@ void Engine::Run()
 	int64_t currentTime = 0;
 	int64_t previousTime = counter.QuadPart;
 
-	float targetFrameRate = 5.0f; // 목표 fps
-	float targetOneFrameTime = 1.0f / targetFrameRate;
+	float targetFrameRate = consoleRenderer.GetFrameRate();
+	float targetOneFrameTime = consoleRenderer.GetFrameTime();
 
 	// Main Game Loop
 	while(true)
@@ -60,6 +60,8 @@ void Engine::Run()
 
 		if(deltaTime >= targetOneFrameTime)
 		{
+			static int count = 0;
+			++count;
 			ProcessInput();
 			Update(deltaTime);
 			Draw();

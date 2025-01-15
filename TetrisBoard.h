@@ -33,6 +33,14 @@ private:
 
     int mWidth;
     int mHeight;
+    bool mIsButtonHeld = false;
+    int mFirstInputFramesLeft = 0;
+    int mContinuousInputFramesLeft = 0;
+    int mFramesUntilUpdate = 0;
+    static constexpr int mUpdateInterval = 100;
+    static constexpr int mFirstInputDelayFrames = 8;
+    static constexpr int mContinuousInputDelayFrames = 24;
+    ConsoleRenderer& mRenderer;
     ConsoleFrame* mFrame;
     Block* mCurrentBlock;
 

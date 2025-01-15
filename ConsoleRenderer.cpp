@@ -2,9 +2,11 @@
 #include "ConsoleRenderer.h"
 #include "ConsoleFrame.h"
 
-ConsoleRenderer::ConsoleRenderer(int width, int height)
+ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
     : mWidth(width)
     , mHeight(height)
+    , mFrameRate(frameRate)
+    , mFrameTime(1.0f / frameRate)
 {
     mActualWidth = mWidth * CELL_WIDTH;
 
@@ -50,8 +52,21 @@ ConsoleFrame * ConsoleRenderer::GetMainFrame()
     return mMainFrame;
 }
 
+float ConsoleRenderer::GetFrameRate() const
+{
+    return mFrameRate;
+}
+
+float ConsoleRenderer::GetFrameTime() const
+{
+    return mFrameTime;
+}
+
 void ConsoleRenderer::RemoveFrame(ConsoleFrame* frame)
 {
+    if(frame == nullptr)
+        return;
+
     auto it = std::find(mFrames.begin(), mFrames.end(), frame);
 
     if (it != mFrames.end())
