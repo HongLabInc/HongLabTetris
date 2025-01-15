@@ -28,6 +28,12 @@ void Engine::LoadGameMode(GameMode * newGameMode)
 	gameMode = newGameMode;
 }
 
+void Engine::Initailize()
+{
+	InitializeModelPointers();
+
+}
+
 void Engine::Run()
 {
 	// 고해상도 카운터

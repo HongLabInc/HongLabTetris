@@ -1,220 +1,27 @@
 #include "Block.h"
 #include <iostream>
 
-mat4x4 blockModel[28] =
-{
-	/* ㅁ
-	   ㅁㅁㅁ  */
-	{
-		{0,0,0,0},
-		{1,0,0,0},
-		{1,1,1,0},
-		{0,0,0,0}
-	},
-	{
-		{0,1,0,0},
-	{0,1,0,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,1,0},
-	{0,0,1,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{1,0,0,0},
-	{1,0,0,0}
-	},
-
-	/*     ㅁ
-		ㅁㅁㅁ  */
-	{
-		{0,0,0,0},
-	{0,0,1,0},
-	{1,1,1,0},
-	{0,0,0,0}
-	},
-	{
-		{1,1,0,0},
-	{0,1,0,0},
-	{0,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,1,0},
-	{1,0,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,0,0,0},
-	{1,0,0,0},
-	{1,1,0,0}
-	},
-
-	/*   ㅁ
-	   ㅁㅁㅁ */
-	{
-		{0,0,0,0},
-	{0,1,0,0},
-	{1,1,1,0},
-	{0,0,0,0}
-	},
-	{
-		{0,1,0,0},
-	{1,1,0,0},
-	{0,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,1,0},
-	{0,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,0,0,0},
-	{1,1,0,0},
-	{1,0,0,0}
-	},
-
-	/* ㅁ
-	   ㅁ
-	   ㅁ
-	   ㅁ */
-	{
-		{1,0,0,0},
-	{1,0,0,0},
-	{1,0,0,0},
-	{1,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,1,1},
-	{0,0,0,0},
-	{0,0,0,0}
-	},
-	{
-		{1,0,0,0},
-	{1,0,0,0},
-	{1,0,0,0},
-	{1,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,1,1},
-	{0,0,0,0},
-	{0,0,0,0}
-	},
-
-	/* ㅁㅁ
-	   ㅁㅁ */
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-
-	/*   ㅁㅁ
-	   ㅁㅁ   */
-	{
-		{0,0,0,0},
-	{0,1,1,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{1,0,0,0},
-	{1,1,0,0},
-	{0,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{0,1,1,0},
-	{1,1,0,0},
-	{0,0,0,0}
-	},
-	{
-		{1,0,0,0},
-	{1,1,0,0},
-	{0,1,0,0},
-	{0,0,0,0}
-	},
-
-	/* ㅁㅁ
-		 ㅁㅁ */
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{0,1,1,0},
-	{0,0,0,0}
-	},
-	{
-		{0,1,0,0},
-	{1,1,0,0},
-	{1,0,0,0},
-	{0,0,0,0}
-	},
-	{
-		{0,0,0,0},
-	{1,1,0,0},
-	{0,1,1,0},
-	{0,0,0,0}
-	},
-	{
-		{0,1,0,0},
-	{1,1,0,0},
-	{1,0,0,0},
-	{0,0,0,0}
-	}
-};
-
 Block::Block(int posX = 0, int posY = 0):
 	x(posX), y(posY){
-	memset(block,0,sizeof(block));
 }
 
-void Block::Initalize() {
+int SetRandNum(int size) {
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	int totalShapes = sizeof(blockModel) / sizeof(mat4x4);
+	std::uniform_int_distribution<> distr(0, size - 1);
 
-	std::uniform_int_distribution<> distr(0,totalShapes - 1);
-
-	int randomNumber = distr(gen);
-
-	memcpy(block,blockModel[randomNumber],sizeof(blockModel[randomNumber]));
-	memcpy(prevShape,blockModel[randomNumber],sizeof(blockModel[randomNumber]));
-
+	return distr(gen);
 }
+
+void Block::Initalize() {
+	type = static_cast<ShapeType>(SetRandNum(SHAPE_COUNT));
+	rotation =  static_cast<RotationState>(SetRandNum(ROTATION_COUNT));
+
+	currentShape = &modelPointers[type][0];
+}
+
 
 void Block::Update()
 {
@@ -245,41 +52,50 @@ void Block::MoveDown()
 }
 
 
-
-
-
 void Block::Rotate() {
 
-	memcpy(prevShape,block,sizeof(prevShape));
-
-	mat4x4 temp = {0};  // 임시 배열 초기화
-
-	// 90도 시계 방향 회전 로직
-	for(int i = 0; i < 4; i++) {
-		for(int j = 0; j < 4; j++) {
-			temp[j][3 - i] = block[i][j];
-		}
-	}
-
-	// 회전 결과를 block에 복사
-	memcpy(block,temp,sizeof(temp));
+	rotation = static_cast<RotationState>((rotation + 1) % ROTATION_COUNT);
 }
 
 void Block::rollback()
 {
-	memcpy(block,prevShape,sizeof(prevShape));
+	rotation = prevRotate;
 	x = prevX;
 	y = prevY;
 }
 
 void Block::UpdatePos() {
+
+	prevRotate = rotation;
 	prevX = x;
 	prevY = y;
-	memcpy(prevShape,block,sizeof(prevShape));  // 현재 블록 상태 저장
 }
 
-const mat4x4& Block::GetShape() const
-{
-	return block;
+const ModelPointer* Block::GetShapeMatrix() const {
+	
+	return currentShape;
 }
+
+int Block::GetMatrixSize() const
+{
+	if(type == SHAPE_O)
+		return 2;
+	 else if(type == SHAPE_I) 
+		return 4;
+	return 3;
+}
+
+char Block::GetValue(int i,int j) 
+{
+	currentShape[rotation].mat2[i][j];
+	if(type == SHAPE_O) {
+		return (*currentShape[rotation].mat2)[i][j]; // mat2x2 접근
+	} else if(type == SHAPE_I) {
+		return (*currentShape[rotation].mat4)[i][j]; // mat4x4 접근
+	} else {
+		return (*currentShape[rotation].mat3)[i][j]; // mat3x3 접근
+	}
+}
+
+
 

@@ -138,11 +138,12 @@ bool TetrisBoard::CheckCollision()
 {
     int worldX = mCurrentBlock->GetX();
     int worldY = mCurrentBlock->GetY();
-    const mat4x4& shape = mCurrentBlock->GetShape();
+    const int size = mCurrentBlock->GetMatrixSize();
 
-    for(int i = 0; i < 4; ++i) {
-        for(int j = 0; j < 4; ++j) {
-            if(shape[i][j] != 0) {
+    for(int i = 0; i < size; ++i) {
+        for(int j = 0; j < size; ++j) {
+            
+            if(mCurrentBlock->GetValue(i, j) != 0) {
                 int boardX = worldX + j;
                 int boardY = worldY + i;
 
@@ -165,11 +166,11 @@ void TetrisBoard::LockBlock()
 {
     int worldX = mCurrentBlock->GetX();
     int worldY = mCurrentBlock->GetY();
-    const mat4x4& shape = mCurrentBlock->GetShape();
+    const int size = mCurrentBlock->GetMatrixSize();
 
-    for(int i = 0; i < 4; ++i) {
-        for(int j = 0; j < 4; ++j) {
-            if(shape[i][j] != 0) {
+    for(int i = 0; i < size; ++i) {
+        for(int j = 0; j < size; ++j) {
+            if(mCurrentBlock->GetValue(i, j) != 0) {
                 int boardX = worldX + j;
                 int boardY = worldY + i;
 
@@ -253,15 +254,15 @@ void TetrisBoard::DrawBlock()
 
     int startX = mCurrentBlock->GetX();
     int startY = mCurrentBlock->GetY();
-    const mat4x4& shape = mCurrentBlock->GetShape();
+    int size = mCurrentBlock->GetMatrixSize();
     const Cell blockCell = Cell(Cell::Type::Block, L'\u263A',
         static_cast<WORD>(ConsoleColor::BrightBlue) << 4);
 
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < size; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < size; ++j)
         {
-            if (shape[i][j] != 0)
+            if (mCurrentBlock->GetValue(i, j) != 0)
             {
                 int boardX = startX + j;
                 int boardY = startY + i;

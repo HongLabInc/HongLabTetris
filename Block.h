@@ -2,17 +2,19 @@
 
 #include <random>
 #include "InputManager.h"
-
-
-typedef char mat4x4[4][4];
+#include "ModelPointer.h"
 
 extern mat4x4 blockModel[28];
 
 
 class Block {
-	mat4x4 prevShape;
-	mat4x4 block;
-	
+
+	ShapeType type;          
+	RotationState rotation; 
+	RotationState prevRotate;
+
+
+	const ModelPointer* currentShape;
 	
 	int prevX,prevY;
 	int x,y;
@@ -33,11 +35,17 @@ public:
 	void MoveDown();
 
 
-
 	void Rotate();
 	void rollback();
 
 	void UpdatePos();
 
-	const mat4x4& GetShape() const;
+
+	const ModelPointer* GetShapeMatrix() const;
+	int GetMatrixSize() const;
+	char GetValue(int i,int j);
+
 };
+
+int SetRandNum();
+
