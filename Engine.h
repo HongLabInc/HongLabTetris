@@ -1,4 +1,5 @@
 #pragma once
+#include "ColorManager.h"
 #include "InputManager.h"
 #include "ConsoleRenderer.h"
 #include "ModelPointer.h"
@@ -30,6 +31,7 @@ private:
 	bool quit;
 
 	InputManager* inputManager;
+	ColorManager* colorManager;
 
 };
 

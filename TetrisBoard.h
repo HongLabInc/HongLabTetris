@@ -2,6 +2,7 @@
 #include "ConsoleFrame.h"
 #include "Block.h"
 #include "InputManager.h"
+#include "ColorManager.h"
 #include "ConsoleRenderer.h"
 
 class TetrisBoard
@@ -52,4 +53,6 @@ private:
     int maxVerticalPixels;
 
     int curHeight;
+
+    ColorManager* colorManager;
 };

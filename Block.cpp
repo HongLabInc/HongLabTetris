@@ -1,8 +1,9 @@
 #include "Block.h"
 #include <iostream>
 
-Block::Block(int posX = 0, int posY = 0):
-	x(posX), y(posY){
+Block::Block(int posX = 0, int posY = 0, ConsoleColor bTexture = ConsoleColor::Black):
+	x(posX), y(posY), texture(bTexture) {
+
 }
 
 int SetRandNum(int size) {
@@ -18,7 +19,6 @@ int SetRandNum(int size) {
 void Block::Initalize() {
 	type = static_cast<ShapeType>(SetRandNum(SHAPE_COUNT));
 	rotation =  static_cast<RotationState>(SetRandNum(ROTATION_COUNT));
-
 	currentShape = &modelPointers[type][0];
 }
 
@@ -29,14 +29,7 @@ void Block::Update()
 }
 
 
-int Block::GetX() 
-{
-	return x;
-}
-int Block::GetY() 
-{
-	return y;
-}
+
 
 void Block::MoveLeft()
 {
@@ -71,6 +64,7 @@ void Block::UpdatePos() {
 	prevY = y;
 }
 
+#pragma region Getter
 const ModelPointer* Block::GetShapeMatrix() const {
 	
 	return currentShape;
@@ -96,6 +90,20 @@ char Block::GetValue(int i,int j)
 		return (*currentShape[rotation].mat3)[i][j]; // mat3x3 접근
 	}
 }
+
+int Block::GetX()
+{
+	return x;
+}
+int Block::GetY()
+{
+	return y;
+}
+ConsoleColor Block::GetTexture() 
+{
+	return texture;
+}
+#pragma endregion
 
 
 
