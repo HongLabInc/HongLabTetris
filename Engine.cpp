@@ -12,6 +12,8 @@ Engine::Engine(ConsoleRenderer& renderer)
 	LoadGameMode(new GameMode(renderer, GameMode::GameModeType::Single));
 
 	inputManager = new InputManager();
+
+	colorManager = new ColorManager();
 }
  
 Engine::~Engine()
@@ -21,6 +23,9 @@ Engine::~Engine()
 		delete gameMode;
 		gameMode = nullptr;
 	}
+
+	delete colorManager;
+	delete inputManager;
 }
 
 void Engine::LoadGameMode(GameMode * newGameMode)

@@ -6,6 +6,7 @@ TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int
     ,mHeight(height)
     ,mCurrentBlock(nullptr)
     ,mRenderer(renderer)
+    ,colorManager(nullptr)
 {
     mFrame = renderer.AddFrame(x, y, width, height);
     isFilled = std::vector<std::vector<bool>>(height, std::vector<bool>(width,false));
@@ -13,6 +14,9 @@ TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int
     rowCounts = std::vector<int>(height, 0);
     maxVerticalPixels = height - 1;
     maxHorizontalPixels = width - 2;
+
+    colorManager = new ColorManager();
+    colorManager->AddBrightColors();
 
     Init();
 }
@@ -189,7 +193,7 @@ void TetrisBoard::Instantiate()
 {
     if(mCurrentBlock == nullptr)
     {
-        mCurrentBlock = new Block(mWidth / 2 - 2,0);
+        mCurrentBlock = new Block(mWidth / 2 - 2, 0, colorManager->GetRandomColor());
         mCurrentBlock->Initalize();
     }
 }
@@ -242,7 +246,7 @@ void TetrisBoard::DrawBoard()
     {
         for(int i = 0; i < mWidth; ++i)
         {
-            if (isFilled[j][i]) mFrame->SetCell(i, j, Cell::blockCell);
+            if (isFilled[j][i]) mFrame->SetCell(i, j, Cell::borderCell);
         }
     }
 }
@@ -256,7 +260,7 @@ void TetrisBoard::DrawBlock()
     int startY = mCurrentBlock->GetY();
     int size = mCurrentBlock->GetMatrixSize();
     const Cell blockCell = Cell(Cell::Type::Block, L'\u263A',
-        static_cast<WORD>(ConsoleColor::BrightBlue) << 4);
+        static_cast<WORD>(mCurrentBlock->GetTexture()) << 4);
 
     for (int i = 0; i < size; ++i)
     {

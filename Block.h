@@ -1,7 +1,7 @@
 #pragma once
 
 #include <random>
-#include "InputManager.h"
+#include "ConsoleColor.h"
 #include "ModelPointer.h"
 
 extern mat4x4 blockModel[28];
@@ -13,7 +13,7 @@ class Block {
 	RotationState rotation; 
 	RotationState prevRotate;
 
-
+	ConsoleColor texture;
 	const ModelPointer* currentShape;
 	
 	int prevX,prevY;
@@ -21,14 +21,13 @@ class Block {
 
 
 public:
-	Block(int posX, int posY);
+	Block(int posX, int posY, ConsoleColor texture);
 	~Block() = default;
 
 	void Initalize();
 	void Update();
 	
-	int GetX ();
-	int GetY ();
+	
 
 	void MoveLeft();
 	void MoveRight();
@@ -41,9 +40,17 @@ public:
 	void UpdatePos();
 
 
+#pragma region Getter
 	const ModelPointer* GetShapeMatrix() const;
 	int GetMatrixSize() const;
 	char GetValue(int i,int j);
+
+	int GetX ();
+	int GetY ();
+
+	ConsoleColor GetTexture();
+#pragma endregion
+
 
 };
 
