@@ -25,6 +25,7 @@ public:
 	~Block() = default;
 
 	void Initalize();
+	void CopyFrom(const Block& other);
 	void Update();
 	
 	
@@ -50,6 +51,8 @@ public:
 
 	ConsoleColor GetTexture();
 #pragma endregion
+
+	void SetTexture(ConsoleColor tex);
 
 
 };

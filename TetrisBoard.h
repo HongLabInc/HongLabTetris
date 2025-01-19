@@ -14,15 +14,16 @@ public:
     void Init();
     void InitBoard(int x,int y,int width,int height);
     void Update(InputManager* im);
+    void UpdateGhostBlock();
     void Draw();
 
-    bool CheckCollision();
+    bool CheckCollision(Block* block);
 
 
 
 private:
     void DrawBoard();
-    void DrawBlock();
+    void DrawBlock(Block* block);
     void LockBlock();
 
     void Instantiate();
@@ -44,6 +45,7 @@ private:
     ConsoleRenderer& mRenderer;
     ConsoleFrame* mFrame;
     Block* mCurrentBlock;
+    Block* mGhostBlock;
 
     std::vector<std::vector<bool>> isFilled;
     std::vector<int> rowCounts;

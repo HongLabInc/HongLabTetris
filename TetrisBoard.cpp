@@ -81,14 +81,16 @@ void TetrisBoard::Update(InputManager* im)
         else if (im->IsKeyPressed(VK_RIGHT)) mCurrentBlock->MoveRight();
         else if (im->IsKeyPressed(VK_UP)) mCurrentBlock->Rotate();
         else if (im->IsKeyPressed(VK_DOWN)) {
-            while (!CheckCollision()) {
+            while (!CheckCollision(mCurrentBlock)) {
                 mCurrentBlock->UpdatePos();
                 mCurrentBlock->MoveDown();
             }
         }
 
-        if (CheckCollision())
+        if (CheckCollision(mCurrentBlock))
             mCurrentBlock->rollback();
+
+        UpdateGhostBlock();
 
         mFirstInputFramesLeft = mFirstInputDelayFrames;
         if (mIsButtonHeld == false)
@@ -116,7 +118,7 @@ void TetrisBoard::Update(InputManager* im)
         mCurrentBlock->UpdatePos();
         mCurrentBlock->Update();
 
-        if (CheckCollision()) {
+        if (CheckCollision(mCurrentBlock)) {
 
             mCurrentBlock->rollback();
             LockBlock();
@@ -135,14 +137,15 @@ void TetrisBoard::Update(InputManager* im)
 void TetrisBoard::Draw()
 {
     DrawBoard();
-    DrawBlock();
+    DrawBlock(mGhostBlock);
+    DrawBlock(mCurrentBlock);
 }
 
-bool TetrisBoard::CheckCollision()
+bool TetrisBoard::CheckCollision(Block* block)
 {
-    int worldX = mCurrentBlock->GetX();
-    int worldY = mCurrentBlock->GetY();
-    const int size = mCurrentBlock->GetMatrixSize();
+    int worldX = block->GetX();
+    int worldY = block->GetY();
+    const int size = block->GetMatrixSize();
 
     for(int i = 0; i < size; ++i) {
         for(int j = 0; j < size; ++j) {
@@ -164,6 +167,21 @@ bool TetrisBoard::CheckCollision()
         }
     }
     return false;
+}
+
+void TetrisBoard::UpdateGhostBlock() {
+
+    if(mCurrentBlock == nullptr) return;
+
+    mGhostBlock->CopyFrom(*mCurrentBlock);
+    mGhostBlock->SetTexture(ConsoleColor::Cyan);
+
+    while(!CheckCollision(mGhostBlock)) {
+        mGhostBlock->UpdatePos();
+        mGhostBlock->MoveDown();
+    }
+
+    mGhostBlock->rollback();
 }
 
 void TetrisBoard::LockBlock()
@@ -195,6 +213,10 @@ void TetrisBoard::Instantiate()
     {
         mCurrentBlock = new Block(mWidth / 2 - 2, 0, colorManager->GetRandomColor());
         mCurrentBlock->Initalize();
+
+        mGhostBlock = new Block(mWidth / 2 - 2,0, ConsoleColor::Black);
+        mGhostBlock->CopyFrom(*mCurrentBlock);
+        mGhostBlock->SetTexture(ConsoleColor::Cyan);
     }
 }
 
@@ -251,16 +273,16 @@ void TetrisBoard::DrawBoard()
     }
 }
 
-void TetrisBoard::DrawBlock()
+void TetrisBoard::DrawBlock(Block* block)
 {
     if (mCurrentBlock == nullptr)
         return;
 
-    int startX = mCurrentBlock->GetX();
-    int startY = mCurrentBlock->GetY();
-    int size = mCurrentBlock->GetMatrixSize();
+    int startX = block->GetX();
+    int startY = block->GetY();
+    int size = block->GetMatrixSize();
     const Cell blockCell = Cell(Cell::Type::Block, L'\u263A',
-        static_cast<WORD>(mCurrentBlock->GetTexture()) << 4);
+        static_cast<WORD>(block->GetTexture()) << 4);
 
     for (int i = 0; i < size; ++i)
     {
