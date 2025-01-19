@@ -22,6 +22,21 @@ void Block::Initalize() {
 	currentShape = &modelPointers[type][0];
 }
 
+void Block::CopyFrom(const Block& other)
+{
+	type      = other.type;
+	rotation  = other.rotation;
+	prevRotate= other.prevRotate;
+	currentShape = other.currentShape;
+
+	prevX     = other.prevX;
+	prevY     = other.prevY;
+	x         = other.x;
+	y         = other.y;
+
+	this->texture   = other.texture;
+}
+
 
 void Block::Update()
 {
@@ -63,6 +78,11 @@ void Block::UpdatePos() {
 	prevX = x;
 	prevY = y;
 }
+
+void Block::SetTexture(ConsoleColor tex) {
+	texture = tex;
+}
+
 
 #pragma region Getter
 const ModelPointer* Block::GetShapeMatrix() const {
