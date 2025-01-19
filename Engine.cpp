@@ -79,12 +79,13 @@ void Engine::Run()
 
 			previousTime = currentTime;
 		}
+
 	}
 }
 
 void Engine::ProcessInput()
 {
-	inputManager->Update();
+	inputManager->AddPressedKeysToQueue();
 }
 
 void Engine::Update(float deltaTime)

@@ -57,60 +57,27 @@ void TetrisBoard::Update(InputManager* im)
 {
     Instantiate();
    
-    if (mIsButtonHeld == true
-        && im->IsKeyPressed(VK_LEFT) == false
-        && im->IsKeyPressed(VK_RIGHT) == false
-        && im->IsKeyPressed(VK_UP) == false
-        && im->IsKeyPressed(VK_DOWN) == false
-        )
-    {
-        mIsButtonHeld = false;
-    }
-
-    if (mIsButtonHeld == false)
-    {
-        mContinuousInputFramesLeft = 0;
-    }
-
-    if (mFirstInputFramesLeft <= 0 && mContinuousInputFramesLeft <= 0)
-    {
         // Input Block Move
-        mCurrentBlock->UpdatePos();
+    mCurrentBlock->UpdatePos();
 
-        if (im->IsKeyPressed(VK_LEFT)) mCurrentBlock->MoveLeft();
-        else if (im->IsKeyPressed(VK_RIGHT)) mCurrentBlock->MoveRight();
-        else if (im->IsKeyPressed(VK_UP)) mCurrentBlock->Rotate();
-        else if (im->IsKeyPressed(VK_DOWN)) {
-            while (!CheckCollision(mCurrentBlock)) {
+    int key = im->DequeueInput();
+    if (key != -1) {
+        if(key == VK_LEFT) mCurrentBlock->MoveLeft();
+        else if(key == VK_RIGHT) mCurrentBlock->MoveRight();
+        else if(key == VK_UP) mCurrentBlock->Rotate();
+        else if(key == VK_DOWN) {
+            while(!CheckCollision(mCurrentBlock)) {
                 mCurrentBlock->UpdatePos();
                 mCurrentBlock->MoveDown();
             }
         }
+    }
 
-        if (CheckCollision(mCurrentBlock))
-            mCurrentBlock->rollback();
+    if (CheckCollision(mCurrentBlock))
+        mCurrentBlock->rollback();
 
         UpdateGhostBlock();
 
-        mFirstInputFramesLeft = mFirstInputDelayFrames;
-        if (mIsButtonHeld == false)
-        {
-			mContinuousInputFramesLeft = mContinuousInputDelayFrames;
-			mIsButtonHeld = true;
-        }
-    }
-    else
-    {
-		if (mFirstInputFramesLeft > 0)
-		{
-			--mFirstInputFramesLeft;
-		}
-        if (mContinuousInputFramesLeft > 0)
-        {
-			--mContinuousInputFramesLeft;
-        }
-    }
-   
  
     if (mFramesUntilUpdate <= 0)
     {
@@ -122,6 +89,7 @@ void TetrisBoard::Update(InputManager* im)
 
             mCurrentBlock->rollback();
             LockBlock();
+            delete mCurrentBlock;
             mCurrentBlock = nullptr;
         }
         mFramesUntilUpdate = mUpdateInterval;

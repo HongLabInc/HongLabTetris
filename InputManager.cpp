@@ -1,11 +1,43 @@
 #include "InputManager.h"
 
+void InputManager::EnqueueInput(int key) {
+	mInputQueue.push(key);
+}
 
-void InputManager::Update()
-{
-	m_keyPressed[VK_LEFT]  = GetAsyncKeyState(VK_LEFT);
-	m_keyPressed[VK_RIGHT] = GetAsyncKeyState(VK_RIGHT);
-	m_keyPressed[VK_SPACE] = GetAsyncKeyState(VK_SPACE);
+int InputManager::DequeueInput() {
+	
+	if(mInputQueue.empty())
+		return -1;
+
+	int key = mInputQueue.front();
+	mInputQueue.pop();
+	return key;
+
+}
+
+void InputManager::AddPressedKeysToQueue() {
+
+    using clock = std::chrono::steady_clock;
+    auto now = clock::now();
+
+    int keysToCheck[] = {VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN};
+
+    for(int key : keysToCheck) {
+        if(IsKeyPressed(key)) {
+            if(!prevKeyState[key]) {
+                EnqueueInput(key);
+                prevKeyState[key] = true;
+                lastKeyEventTime[key] = now;  
+            } else {
+                if(now - lastKeyEventTime[key] >= continuousInputInterval) {
+                    EnqueueInput(key);
+                    lastKeyEventTime[key] = now;  // 시간 갱신
+                }
+            }
+        } else {
+            prevKeyState[key] = false;
+        }
+    }
 }
 
 bool InputManager::IsKeyPressed(int key)
