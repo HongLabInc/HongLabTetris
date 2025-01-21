@@ -1,13 +1,19 @@
+#define NOMINMAX
+#include <algorithm>
+#include <string>
 #include "TetrisBoard.h"
 #include "ConsoleColor.h"
 
+const std::array<int, 100> TetrisBoard::scoreTable = TetrisBoard::generateScoreTable();
 TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height,InputManager* im,EventManager* em)
     : mWidth(width)
     , mHeight(height)
-    , mCurrentBlock(nullptr)
     , mRenderer(renderer)
     , colorManager(std::make_unique<ColorManager>())
     , mFrame(renderer.AddFrame(x, y, width, height))
+    , mQueueFrame1(renderer.AddFrame(x + width + 1, y, mQueueFrameSize, mQueueFrameSize))
+	, mQueueFrame2(renderer.AddFrame(x + width + 1, y + mQueueFrameSize + 1, mQueueFrameSize, mQueueFrameSize))
+	, mScoreFrame(renderer.AddFrame(x + width, y + mQueueFrameSize * 2 + 2, mQueueFrameSize + 2, 5))
     , isFilled(std::vector<std::vector<bool>>(height, std::vector<bool>(width, false)))
     , rowCounts(std::vector<int>(height, 0))
     , maxVerticalPixels(height - 1)
@@ -20,13 +26,26 @@ TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int
     mFrame->Clear();
     mFrame->DrawRectangle(0, 0, mWidth, mHeight, Cell::borderCell);
     mFrame->FillRectangle(1, 1, mWidth - 2, mHeight - 2, Cell::emptyCell);
+    mQueueFrame1->Clear();
+    mQueueFrame1->DrawRectangle(0, 0, mQueueFrameSize, mQueueFrameSize, Cell::borderCell);
+    mQueueFrame1->FillRectangle(1, 1, mQueueFrameSize - 2, mQueueFrameSize - 2, Cell::emptyCell);
+    mQueueFrame2->Clear();
+    mQueueFrame2->DrawRectangle(0, 0, mQueueFrameSize, mQueueFrameSize, Cell::borderCell);
+    mQueueFrame2->FillRectangle(1, 1, mQueueFrameSize - 2, mQueueFrameSize - 2, Cell::emptyCell);
+    mScoreFrame->Clear();
+    mScoreFrame->SetText(1, 0, L"S C O R E", static_cast<WORD>(ConsoleColor::BrightYellow));
+    UpdateScore();
 
     InitBoard(0, 0, mWidth, mHeight);
+
+    mSecondBlock = std::make_unique<Block>(2, 2, colorManager->GetRandomColor());
+    mThirdBlock = std::make_unique<Block>(2, 2, colorManager->GetRandomColor());
+	mSecondBlock->Initalize();
+	mThirdBlock->Initalize();
 }
 
 TetrisBoard::~TetrisBoard()
 {
-    delete mCurrentBlock; // 블록 제거
     mRenderer.RemoveFrame(mFrame);
 }
 
@@ -50,27 +69,46 @@ void TetrisBoard::InitBoard(int x,int y,int width,int height) {
 
 void TetrisBoard::Update()
 {
-    Instantiate();
+    if (mIsBlockActive == false)
+    {
+		Instantiate();
+    }
    
     HandleInput();
 
     MoveBlockDown();
 
-    CheckLines();
+    if (mIsBlockActive == false)
+    {
+		CheckLines();
+    }
 }
 
 void TetrisBoard::Instantiate()
 {
-    if(mCurrentBlock == nullptr)
-    {
-        mCurrentBlock = new Block(mWidth / 2 - 2, 0, colorManager->GetRandomColor());
-        mCurrentBlock->Initalize();
+	mCurrentBlock = std::move(mSecondBlock);
+	mSecondBlock = std::move(mThirdBlock);
+	mThirdBlock = std::make_unique<Block>(2, 2, colorManager->GetRandomColor());
+    mThirdBlock->Initalize();
 
-        mGhostBlock = new Block(mWidth / 2 - 2,0, ConsoleColor::Black);
-        mGhostBlock->CopyFrom(*mCurrentBlock);
-        mGhostBlock->SetTexture(ConsoleColor::Cyan);
-        mIsBlockActive = true;
-    }
+	mCurrentBlock->SetX(mWidth / 2 - 2);
+
+	mGhostBlock = std::make_unique<Block>(mWidth / 2 - 2, 0, ConsoleColor::Black);
+	mGhostBlock->CopyFrom(*mCurrentBlock);
+	mGhostBlock->SetTexture(ConsoleColor::Cyan);
+    
+    mQueueFrame1->FillRectangle(1, 1, mQueueFrameSize - 2, mQueueFrameSize - 2, Cell::emptyCell);
+    Cell blockCell{};
+    blockCell.SetBackgroundColor(mSecondBlock->GetTexture());
+    DrawBlock(mQueueFrame1, mSecondBlock, blockCell);
+
+    mQueueFrame2->FillRectangle(1, 1, mQueueFrameSize - 2, mQueueFrameSize - 2, Cell::emptyCell);
+	blockCell.SetForegroundColor(ConsoleColor::White);
+	blockCell.SetBackgroundColor(ConsoleColor::Black);
+	blockCell.SetChar(L'\u25A0');
+	DrawBlock(mQueueFrame2, mThirdBlock, blockCell);
+
+	mIsBlockActive = true;
 }
 
 void TetrisBoard::HandleInput()
@@ -88,6 +126,7 @@ void TetrisBoard::HandleInput()
 				mCurrentBlock->UpdatePos();
 				mCurrentBlock->MoveDown();
 			}
+           mIsBlockReadyToLock = true;
 		}
 	}
 
@@ -99,7 +138,7 @@ void TetrisBoard::HandleInput()
 
 void TetrisBoard::MoveBlockDown()
 {
-	if (mFramesUntilUpdate <= 0)
+	if (mIsBlockReadyToLock || mFramesUntilUpdate <= 0)
 	{
 		// Update Basic Move
 		mCurrentBlock->UpdatePos();
@@ -109,9 +148,9 @@ void TetrisBoard::MoveBlockDown()
 
 			mCurrentBlock->rollback();
 			LockBlock();
-			delete mCurrentBlock;
-			mCurrentBlock = nullptr;
+            mCurrentBlock.reset();
 			mIsBlockActive = false;
+            mIsBlockReadyToLock = false;
 		}
 		mFramesUntilUpdate = mUpdateInterval;
 	} else
@@ -120,7 +159,7 @@ void TetrisBoard::MoveBlockDown()
 	}
 }
 
-bool TetrisBoard::CheckCollision(Block* block)
+bool TetrisBoard::CheckCollision(std::unique_ptr<Block>& block)
 {
     int worldX = block->GetX();
     int worldY = block->GetY();
@@ -201,11 +240,47 @@ void TetrisBoard::ClearLine(int row)
 
 void TetrisBoard::CheckLines()
 {
-    for(int i = maxVerticalPixels - 1; i >= 0; --i)
-        if(rowCounts[i] == maxHorizontalPixels)
-            ClearLine(i);
+    bool isAnyLineCleared = false;
 
-    MoveLines();
+    for (int i = maxVerticalPixels - 1; i >= 0; --i)
+    {
+        if (rowCounts[i] == maxHorizontalPixels)
+        {
+            isAnyLineCleared = true;
+            ClearLine(i);
+            mScore = std::min(999999999, mScore + scoreTable[mCombo]);
+            mCombo = std::min(99, mCombo + 1);
+        }
+    }
+
+    if (isAnyLineCleared)
+    {
+		MoveLines();
+    }
+    else
+    {
+        mCombo = 0;
+    }
+
+    UpdateScore();
+}
+
+void TetrisBoard::UpdateScore()
+{
+    std::wstring score = std::to_wstring(mScore);
+    int position = (mQueueFrameSize / 2 + 1) - static_cast<int>(score.length() / 2);
+
+    mScoreFrame->FillRectangle(0, 2, mQueueFrameSize + 2, 1, Cell::emptyCell);
+    mScoreFrame->SetText(position, 2, score, static_cast<WORD>(ConsoleColor::BrightWhite));
+
+	mScoreFrame->FillRectangle(0, 4, mQueueFrameSize + 2, 1, Cell::emptyCell);
+    if (mCombo >= 3)
+    {
+        std::wstring combo = L"Combo " + std::to_wstring(mCombo);
+		position = (mQueueFrameSize / 2 + 1) - static_cast<int>(combo.length() / 2);
+
+		mScoreFrame->SetText(position, 4, combo, static_cast<WORD>(ConsoleColor::BrightGreen));
+    }
 }
 
 void TetrisBoard::MoveLine(int targetLine, int sourceLine)
@@ -255,12 +330,12 @@ void TetrisBoard::Draw()
         blockCell.SetForegroundColor(ConsoleColor::White);
 
         blockCell.SetChar(L'\u25A0');
-        DrawBlock(mGhostBlock, blockCell);
+        DrawBlock(mFrame, mGhostBlock, blockCell);
 
         blockCell.SetChar(L'\u263A'); //스마일
         blockCell.SetForegroundColor(ConsoleColor::Black);
         blockCell.SetBackgroundColor(mCurrentBlock->GetTexture());
-        DrawBlock(mCurrentBlock, blockCell);
+        DrawBlock(mFrame, mCurrentBlock, blockCell);
     }
 }
 
@@ -303,11 +378,8 @@ void TetrisBoard::ClearBlockImage()
     }
 }
 
-void TetrisBoard::DrawBlock(Block* block, const Cell& blockCell)
+void TetrisBoard::DrawBlock(ConsoleFrame* frame, std::unique_ptr<Block>& block, const Cell& blockCell)
 {
-    if (mCurrentBlock == nullptr)
-        return;
-
     int startX = block->GetX();
     int startY = block->GetY();
     int size = block->GetMatrixSize();
@@ -316,16 +388,29 @@ void TetrisBoard::DrawBlock(Block* block, const Cell& blockCell)
     {
         for (int j = 0; j < size; ++j)
         {
-            if (mCurrentBlock->GetValue(i, j) != 0)
+            if (block->GetValue(i, j) != 0)
             {
                 int boardX = startX + j;
                 int boardY = startY + i;
 
-                if (boardX >= 1 && boardX < mWidth - 1 && boardY >= 1 && boardY < mHeight - 1)
+                if (boardX >= 1 && boardX < frame->GetWidth() - 1 && boardY >= 1 && boardY < frame->GetHeight() - 1)
                 {
-                    mFrame->SetCell(boardX, boardY, blockCell);
+                    frame->SetCell(boardX, boardY, blockCell);
                 }
             }
         }
     }
+}
+
+std::array<int, 100> TetrisBoard::generateScoreTable()
+{
+    std::array<int, 100> table{};
+
+    table[0] = 100;
+    for (int i = 1; i < 100; ++i)
+    {
+        table[i] = static_cast<int>(table[i - 1] * 1.54f);
+    }
+
+    return table;
 }
