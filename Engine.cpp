@@ -12,8 +12,6 @@ Engine::Engine(ConsoleRenderer& renderer)
 	LoadGameMode(new GameMode(renderer, GameMode::GameModeType::Single));
 
 	inputManager = new InputManager();
-
-	colorManager = new ColorManager();
 }
  
 Engine::~Engine()
@@ -24,7 +22,6 @@ Engine::~Engine()
 		gameMode = nullptr;
 	}
 
-	delete colorManager;
 	delete inputManager;
 }
 
@@ -36,7 +33,6 @@ void Engine::LoadGameMode(GameMode * newGameMode)
 void Engine::Initailize()
 {
 	InitializeModelPointers();
-
 }
 
 void Engine::Run()
@@ -54,6 +50,10 @@ void Engine::Run()
 	float targetFrameRate = consoleRenderer.GetFrameRate();
 	float targetOneFrameTime = consoleRenderer.GetFrameTime();
 
+	constexpr int INPUT_FREQUENCY_MULTIPLIER = 5;
+	float refreshTime = targetOneFrameTime / static_cast<float>(INPUT_FREQUENCY_MULTIPLIER);
+
+	int frameUntilRender = 1;
 	// Main Game Loop
 	while(true)
 	{
@@ -69,13 +69,17 @@ void Engine::Run()
 		float deltaTime = static_cast<float>(currentTime - previousTime) /
 			static_cast<float>(frequency.QuadPart);
 
-		if(deltaTime >= targetOneFrameTime)
+		if(deltaTime >= refreshTime)
 		{
-			static int count = 0;
-			++count;
 			ProcessInput();
-			Update(deltaTime);
-			Draw();
+			--frameUntilRender;
+
+			if (frameUntilRender <= 0)
+			{
+				Update(deltaTime);
+				Draw();
+				frameUntilRender = INPUT_FREQUENCY_MULTIPLIER;
+			}
 
 			previousTime = currentTime;
 		}

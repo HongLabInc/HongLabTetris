@@ -31,7 +31,4 @@ private:
 	bool quit;
 
 	InputManager* inputManager;
-	ColorManager* colorManager;
-
 };
-

@@ -1,9 +1,11 @@
 #include "Block.h"
 #include <iostream>
 
-Block::Block(int posX = 0, int posY = 0, ConsoleColor bTexture = ConsoleColor::Black):
-	x(posX), y(posY), texture(bTexture) {
-
+Block::Block(int posX, int posY, ConsoleColor bTexture)
+	: x(posX)
+	, y(posY)
+	, texture(bTexture)
+{
 }
 
 int SetRandNum(int size) {
@@ -37,14 +39,10 @@ void Block::CopyFrom(const Block& other)
 	this->texture   = other.texture;
 }
 
-
 void Block::Update()
 {
 	y++;
 }
-
-
-
 
 void Block::MoveLeft()
 {
@@ -119,7 +117,7 @@ int Block::GetY()
 {
 	return y;
 }
-ConsoleColor Block::GetTexture() 
+ConsoleColor Block::GetTexture() const
 {
 	return texture;
 }
