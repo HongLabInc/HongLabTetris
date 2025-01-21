@@ -43,8 +43,10 @@ public:
 	int GetMatrixSize() const;
 	char GetValue(int i,int j);
 
-	int GetX ();
-	int GetY ();
+	void SetX(int row);
+	void SetY(int column);
+	int GetX () const;
+	int GetY () const;
 
 	ConsoleColor GetTexture() const;
 #pragma endregion

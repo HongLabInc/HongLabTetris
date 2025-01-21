@@ -109,11 +109,21 @@ char Block::GetValue(int i,int j)
 	}
 }
 
-int Block::GetX()
+void Block::SetX(int row)
+{
+	x = row;
+}
+
+void Block::SetY(int column)
+{
+	y = column;
+}
+
+int Block::GetX() const
 {
 	return x;
 }
-int Block::GetY()
+int Block::GetY() const
 {
 	return y;
 }
