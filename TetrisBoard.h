@@ -28,6 +28,7 @@ private:
     void Instantiate();
 
     void CheckLines();
+    void MoveLine(int targetLine, int sourceLine);
     void ClearLine(int row); // 꽉채워진 라인 지우기
     void MoveLines();
 

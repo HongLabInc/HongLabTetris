@@ -189,16 +189,32 @@ void TetrisBoard::LockBlock()
 
 void TetrisBoard::ClearLine(int row)
 {
+    const int columnStart = 1;
+    const int height = 1;
+
     rowCounts[row] = 0;
+    mFrame->FillRectangle(row, columnStart, mWidth - 2, height, Cell::emptyCell);
+	std::fill(isFilled[row].begin() + 1, isFilled[row].end() - 1, false);
 }
 
 void TetrisBoard::CheckLines()
 {
-    for(int i = maxVerticalPixels - 1; i >= 0; i--)
-        while(rowCounts[i] == maxHorizontalPixels)
+    for(int i = maxVerticalPixels - 1; i >= 0; --i)
+        if(rowCounts[i] == maxHorizontalPixels)
             ClearLine(i);
 
     MoveLines();
+}
+
+void TetrisBoard::MoveLine(int targetLine, int sourceLine)
+{
+	for (int i = 1; i < mWidth - 1; ++i)
+	{
+		mFrame->SetCell(i, targetLine, mFrame->GetCell(i, sourceLine));
+        isFilled[targetLine][i] = isFilled[sourceLine][i];
+	}
+	rowCounts[targetLine] = rowCounts[sourceLine];
+	ClearLine(sourceLine);
 }
 
 void TetrisBoard::MoveLines() {
@@ -214,8 +230,7 @@ void TetrisBoard::MoveLines() {
             isFilled[targetLine] = isFilled[sourceLine];
             rowCounts[targetLine] = rowCounts[sourceLine];
 
-            rowCounts[sourceLine] = 0;
-            std::fill(isFilled[sourceLine].begin() + 1,isFilled[sourceLine].end() - 1,false);
+            MoveLine(targetLine, sourceLine);
              
             targetLine--;
             sourceLine--;
