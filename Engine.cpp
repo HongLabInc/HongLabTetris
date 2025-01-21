@@ -9,9 +9,11 @@ Engine::Engine(ConsoleRenderer& renderer)
 	, gameMode(nullptr)
 	, quit(false)
 {
-	LoadGameMode(new GameMode(renderer, GameMode::GameModeType::Single));
+	inputManager = std::make_unique<InputManager>();
+	eventManager = std::make_unique<EventManager>();
 
-	inputManager = new InputManager();
+	LoadGameMode(new GameMode(renderer,GameMode::GameModeType::Single,inputManager.get(),eventManager.get()));
+
 }
  
 Engine::~Engine()
@@ -22,7 +24,6 @@ Engine::~Engine()
 		gameMode = nullptr;
 	}
 
-	delete inputManager;
 }
 
 void Engine::LoadGameMode(GameMode * newGameMode)
@@ -94,7 +95,7 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	gameMode->Update(inputManager);
+	gameMode->Update();
 
 	//Sleep(500);
 }

@@ -4,9 +4,11 @@
 #include <iostream>
 #include <Windows.h>
 
-GameMode::GameMode(ConsoleRenderer& renderer, GameModeType mode)
+GameMode::GameMode(ConsoleRenderer& renderer,GameModeType mode, InputManager* im,EventManager* em)
 	: mRenderer(renderer)
-	, mCurrentMode(mode)
+	,mCurrentMode(mode)
+	,mInputManager(im)
+	,mEventManager(em)
 {
 	switch(mCurrentMode)
     {
@@ -19,11 +21,11 @@ GameMode::GameMode(ConsoleRenderer& renderer, GameModeType mode)
     }
 }
 
-void GameMode::Update(InputManager* im)
+void GameMode::Update()
 {
     for(auto& board : mBoards)
     {
-		board->Update(im);
+		board->Update();
     }
 }
 
@@ -39,7 +41,7 @@ void GameMode::Draw()
 
 void GameMode::SetupSingleMode()
 {
-    mBoards.emplace_back(std::make_shared<TetrisBoard>(mRenderer, 3, 3, 12, 24));
+    mBoards.emplace_back(std::make_shared<TetrisBoard>(mRenderer, 3, 3, 12, 24, mInputManager, mEventManager));
 }
 
 void GameMode::SetupMultiplayerMode()

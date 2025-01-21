@@ -1,7 +1,7 @@
 #include "TetrisBoard.h"
 #include "ConsoleColor.h"
 
-TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height)
+TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height,InputManager* im,EventManager* em)
     : mWidth(width)
     , mHeight(height)
     , mCurrentBlock(nullptr)
@@ -12,6 +12,8 @@ TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int
     , rowCounts(std::vector<int>(height, 0))
     , maxVerticalPixels(height - 1)
     , maxHorizontalPixels(width - 2)
+	, mInputManager(im)
+    , mEventManager(em)
 {
     colorManager->AddBrightColors();
 
@@ -46,11 +48,11 @@ void TetrisBoard::InitBoard(int x,int y,int width,int height) {
     }
 }
 
-void TetrisBoard::Update(InputManager* im)
+void TetrisBoard::Update()
 {
     Instantiate();
    
-    HandleInput(im);
+    HandleInput();
 
     MoveBlockDown();
 
@@ -71,12 +73,12 @@ void TetrisBoard::Instantiate()
     }
 }
 
-void TetrisBoard::HandleInput(InputManager* im)
+void TetrisBoard::HandleInput()
 {
 	// Input Block Move
 	mCurrentBlock->UpdatePos();
 
-	int key = im->DequeueInput();
+	int key = mInputManager->DequeueInput();
 	if (key != -1) {
 		if (key == VK_LEFT) mCurrentBlock->MoveLeft();
 		else if (key == VK_RIGHT) mCurrentBlock->MoveRight();
@@ -237,10 +239,14 @@ void TetrisBoard::MoveLines() {
         } else if(!rowCounts[sourceLine])
             sourceLine--;
     }
+
+
 }
 
 void TetrisBoard::Draw()
 {
+
+   
     ClearBlockImage();
 
     if (mIsBlockActive)
@@ -256,6 +262,31 @@ void TetrisBoard::Draw()
         blockCell.SetBackgroundColor(mCurrentBlock->GetTexture());
         DrawBlock(mCurrentBlock, blockCell);
     }
+}
+
+bool TetrisBoard::IsFull()
+{
+    for(int i = 0; i < 3; i++) {
+        for(int j = 1; j < mWidth - 1; j++) {
+			if(isFilled[i][j] == true) {
+				return true;
+			}
+		}
+    }
+
+    return false;
+}
+
+int TetrisBoard::GetTopRow()
+{
+    for(int i = 0; i < mHeight - 1; ++i) {
+        for(int j = 1; j < mWidth - 1; ++j) { 
+            if(isFilled[i][j]) {
+                return i;
+            }
+        }
+    }
+    return mHeight; 
 }
 
 void TetrisBoard::ClearBlockImage()
