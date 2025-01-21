@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "ConsoleRenderer.h"
 #include "ModelPointer.h"
+#include "EventManager.h"
 
 class GameMode;
 class Engine
@@ -30,5 +31,6 @@ private:
 
 	bool quit;
 
-	InputManager* inputManager;
+	std::unique_ptr<InputManager> inputManager;
+	std::unique_ptr<EventManager> eventManager;
 };

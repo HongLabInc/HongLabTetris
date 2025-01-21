@@ -3,20 +3,24 @@
 #include "Block.h"
 #include "InputManager.h"
 #include "ColorManager.h"
+#include "EventManager.h"
 #include "ConsoleRenderer.h"
 
 class TetrisBoard
 {
 public:
-    TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height);
+    TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height,InputManager* im,EventManager* em);
     ~TetrisBoard();
 
     void InitBoard(int x,int y,int width,int height);
-    void Update(InputManager* im);
-    void HandleInput(InputManager * im);
+    void Update();
+    void HandleInput();
     void MoveBlockDown();
     void UpdateGhostBlock();
     void Draw();
+
+    bool IsFull();
+    int GetTopRow();
 
     bool CheckCollision(Block* block);
 
@@ -60,4 +64,8 @@ private:
     int curHeight;
 
     std::unique_ptr<ColorManager> colorManager;
+    
+    // ptr 소유권 Engine에게 있음(여기서도 unique로 받을 필요는 없을듯?)
+	InputManager* mInputManager;
+	EventManager* mEventManager;
 };

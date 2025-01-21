@@ -6,6 +6,7 @@
 #include "TetrisBoard.h"
 #include "ConsoleRenderer.h"
 #include "InputManager.h"
+#include "EventManager.h"
 
 class GameMode
 {
@@ -15,11 +16,12 @@ public:
         Single,
         Multiplayer
     };
-    GameMode(ConsoleRenderer& renderer, GameModeType mode);
+    GameMode(ConsoleRenderer& renderer, GameModeType mode, InputManager* im, EventManager* em);
     ~GameMode() = default;
 
-    void Update(InputManager* im);
+    void Update();
     void Draw();
+    void OnGameEnd();
 
 private:
 	void SetupSingleMode();
@@ -29,4 +31,6 @@ private:
     std::vector<std::shared_ptr<TetrisBoard>> mBoards;
     GameModeType mCurrentMode;
 
+	InputManager* mInputManager;
+	EventManager* mEventManager;
 };

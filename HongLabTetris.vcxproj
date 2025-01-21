@@ -134,6 +134,7 @@
     <ClCompile Include="ConsoleFrame.cpp" />
     <ClCompile Include="ConsoleRenderer.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="HongLabTetris.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="ConsoleFrame.h" />
     <ClInclude Include="ConsoleRenderer.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="ModelPointer.h" />
