@@ -3,36 +3,29 @@
 
 TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height)
     : mWidth(width)
-    ,mHeight(height)
-    ,mCurrentBlock(nullptr)
-    ,mRenderer(renderer)
-    ,colorManager(nullptr)
+    , mHeight(height)
+    , mCurrentBlock(nullptr)
+    , mRenderer(renderer)
+    , colorManager(std::make_unique<ColorManager>())
+    , mFrame(renderer.AddFrame(x, y, width, height))
+    , isFilled(std::vector<std::vector<bool>>(height, std::vector<bool>(width, false)))
+    , rowCounts(std::vector<int>(height, 0))
+    , maxVerticalPixels(height - 1)
+    , maxHorizontalPixels(width - 2)
 {
-    mFrame = renderer.AddFrame(x, y, width, height);
-    isFilled = std::vector<std::vector<bool>>(height, std::vector<bool>(width,false));
-
-    rowCounts = std::vector<int>(height, 0);
-    maxVerticalPixels = height - 1;
-    maxHorizontalPixels = width - 2;
-
-    colorManager = new ColorManager();
     colorManager->AddBrightColors();
 
-    Init();
+    mFrame->Clear();
+    mFrame->DrawRectangle(0, 0, mWidth, mHeight, Cell::borderCell);
+    mFrame->FillRectangle(1, 1, mWidth - 2, mHeight - 2, Cell::emptyCell);
+
+    InitBoard(0, 0, mWidth, mHeight);
 }
 
 TetrisBoard::~TetrisBoard()
 {
     delete mCurrentBlock; // 블록 제거
     mRenderer.RemoveFrame(mFrame);
-}
-
-void TetrisBoard::Init()
-{
-    mFrame->Clear();
-    mFrame->DrawRectangle(0, 0, mWidth, mHeight, Cell::borderCell);
-    mFrame->FillRectangle(1, 1, mWidth - 2, mHeight - 2, Cell::emptyCell);
-    InitBoard(0, 0, mWidth, mHeight);
 }
 
 void TetrisBoard::InitBoard(int x,int y,int width,int height) {
@@ -57,56 +50,72 @@ void TetrisBoard::Update(InputManager* im)
 {
     Instantiate();
    
-        // Input Block Move
-    mCurrentBlock->UpdatePos();
+    HandleInput(im);
 
-    int key = im->DequeueInput();
-    if (key != -1) {
-        if(key == VK_LEFT) mCurrentBlock->MoveLeft();
-        else if(key == VK_RIGHT) mCurrentBlock->MoveRight();
-        else if(key == VK_UP) mCurrentBlock->Rotate();
-        else if(key == VK_DOWN) {
-            while(!CheckCollision(mCurrentBlock)) {
-                mCurrentBlock->UpdatePos();
-                mCurrentBlock->MoveDown();
-            }
-        }
-    }
-
-    if (CheckCollision(mCurrentBlock))
-        mCurrentBlock->rollback();
-
-        UpdateGhostBlock();
-
- 
-    if (mFramesUntilUpdate <= 0)
-    {
-        // Update Basic Move
-        mCurrentBlock->UpdatePos();
-        mCurrentBlock->Update();
-
-        if (CheckCollision(mCurrentBlock)) {
-
-            mCurrentBlock->rollback();
-            LockBlock();
-            delete mCurrentBlock;
-            mCurrentBlock = nullptr;
-        }
-        mFramesUntilUpdate = mUpdateInterval;
-    }
-    else
-    {
-        --mFramesUntilUpdate;
-    }
+    MoveBlockDown();
 
     CheckLines();
 }
 
-void TetrisBoard::Draw()
+void TetrisBoard::Instantiate()
 {
-    DrawBoard();
-    DrawBlock(mGhostBlock);
-    DrawBlock(mCurrentBlock);
+    if(mCurrentBlock == nullptr)
+    {
+        mCurrentBlock = new Block(mWidth / 2 - 2, 0, colorManager->GetRandomColor());
+        mCurrentBlock->Initalize();
+
+        mGhostBlock = new Block(mWidth / 2 - 2,0, ConsoleColor::Black);
+        mGhostBlock->CopyFrom(*mCurrentBlock);
+        mGhostBlock->SetTexture(ConsoleColor::Cyan);
+        mIsBlockActive = true;
+    }
+}
+
+void TetrisBoard::HandleInput(InputManager* im)
+{
+	// Input Block Move
+	mCurrentBlock->UpdatePos();
+
+	int key = im->DequeueInput();
+	if (key != -1) {
+		if (key == VK_LEFT) mCurrentBlock->MoveLeft();
+		else if (key == VK_RIGHT) mCurrentBlock->MoveRight();
+		else if (key == VK_UP) mCurrentBlock->Rotate();
+		else if (key == VK_DOWN) {
+			while (!CheckCollision(mCurrentBlock)) {
+				mCurrentBlock->UpdatePos();
+				mCurrentBlock->MoveDown();
+			}
+		}
+	}
+
+	if (CheckCollision(mCurrentBlock))
+		mCurrentBlock->rollback();
+
+	UpdateGhostBlock();
+}
+
+void TetrisBoard::MoveBlockDown()
+{
+	if (mFramesUntilUpdate <= 0)
+	{
+		// Update Basic Move
+		mCurrentBlock->UpdatePos();
+		mCurrentBlock->Update();
+
+		if (CheckCollision(mCurrentBlock)) {
+
+			mCurrentBlock->rollback();
+			LockBlock();
+			delete mCurrentBlock;
+			mCurrentBlock = nullptr;
+			mIsBlockActive = false;
+		}
+		mFramesUntilUpdate = mUpdateInterval;
+	} else
+	{
+		--mFramesUntilUpdate;
+	}
 }
 
 bool TetrisBoard::CheckCollision(Block* block)
@@ -169,25 +178,14 @@ void TetrisBoard::LockBlock()
                    boardY >= 0 && boardY < mHeight) {
                     isFilled[boardY][boardX] = true;
                     rowCounts[boardY]++;
+                    Cell blockCell(Cell::Type::Block, L' ');
+                    blockCell.SetBackgroundColor(mCurrentBlock->GetTexture());
+                    mFrame->SetCell(boardX, boardY, blockCell);
                 }
             }
         }
     }
 }
-
-void TetrisBoard::Instantiate()
-{
-    if(mCurrentBlock == nullptr)
-    {
-        mCurrentBlock = new Block(mWidth / 2 - 2, 0, colorManager->GetRandomColor());
-        mCurrentBlock->Initalize();
-
-        mGhostBlock = new Block(mWidth / 2 - 2,0, ConsoleColor::Black);
-        mGhostBlock->CopyFrom(*mCurrentBlock);
-        mGhostBlock->SetTexture(ConsoleColor::Cyan);
-    }
-}
-
 
 void TetrisBoard::ClearLine(int row)
 {
@@ -197,7 +195,7 @@ void TetrisBoard::ClearLine(int row)
 void TetrisBoard::CheckLines()
 {
     for(int i = maxVerticalPixels - 1; i >= 0; i--)
-        if(rowCounts[i] == maxHorizontalPixels)
+        while(rowCounts[i] == maxHorizontalPixels)
             ClearLine(i);
 
     MoveLines();
@@ -226,22 +224,40 @@ void TetrisBoard::MoveLines() {
     }
 }
 
-
-
-void TetrisBoard::DrawBoard()
+void TetrisBoard::Draw()
 {
-    //출력 테스트용 임시 방편
-    mFrame->FillRectangle(1,0,mWidth -2,mHeight - 1,Cell::emptyCell);
-    for(int j = 0; j < mHeight; ++j)
+    ClearBlockImage();
+
+    if (mIsBlockActive)
     {
-        for(int i = 0; i < mWidth; ++i)
+        Cell blockCell(static_cast<WORD>(ConsoleColor::Black) << 4);
+        blockCell.SetForegroundColor(ConsoleColor::White);
+
+        blockCell.SetChar(L'\u25A0');
+        DrawBlock(mGhostBlock, blockCell);
+
+        blockCell.SetChar(L'\u263A'); //스마일
+        blockCell.SetForegroundColor(ConsoleColor::Black);
+        blockCell.SetBackgroundColor(mCurrentBlock->GetTexture());
+        DrawBlock(mCurrentBlock, blockCell);
+    }
+}
+
+void TetrisBoard::ClearBlockImage()
+{
+    for (int row = 0; row < mHeight - 1; ++row)
+    {
+        for (int column = 1; column < mWidth - 1; ++column)
         {
-            if (isFilled[j][i]) mFrame->SetCell(i, j, Cell::borderCell);
+            if (isFilled[row][column] == false)
+            {
+                mFrame->SetCell(column, row, Cell::emptyCell);
+            }
         }
     }
 }
 
-void TetrisBoard::DrawBlock(Block* block)
+void TetrisBoard::DrawBlock(Block* block, const Cell& blockCell)
 {
     if (mCurrentBlock == nullptr)
         return;
@@ -249,8 +265,6 @@ void TetrisBoard::DrawBlock(Block* block)
     int startX = block->GetX();
     int startY = block->GetY();
     int size = block->GetMatrixSize();
-    const Cell blockCell = Cell(Cell::Type::Block, L'\u263A',
-        static_cast<WORD>(block->GetTexture()) << 4);
 
     for (int i = 0; i < size; ++i)
     {

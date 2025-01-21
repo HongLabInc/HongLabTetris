@@ -31,6 +31,8 @@ public:
 
 	WORD GetAttributes() const;
 	void SetAttributes(WORD ColorAttr);
+	void SetForegroundColor(ConsoleColor color);
+	void SetBackgroundColor(ConsoleColor color);
 
 	static const Cell emptyCell;
 	static const Cell borderCell;

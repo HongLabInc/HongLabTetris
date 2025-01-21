@@ -25,10 +25,8 @@ private:
 	void SetupSingleMode();
 	void SetupMultiplayerMode();
 
-    void ShowExampleConsoleFrame(); // 임시 함수
-
     ConsoleRenderer& mRenderer;
-    std::vector<TetrisBoard> mBoards;
+    std::vector<std::shared_ptr<TetrisBoard>> mBoards;
     GameModeType mCurrentMode;
 
 };

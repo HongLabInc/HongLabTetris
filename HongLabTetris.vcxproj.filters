@@ -56,7 +56,7 @@
     <ClInclude Include="GameMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BlockMap.h">
+    <ClInclude Include="Archive\deprecated_BlockMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Block.h">

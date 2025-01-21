@@ -1,8 +1,8 @@
 #include "Cell.h"
 
 const Cell Cell::emptyCell(Cell::Type::Empty, Cell::CHAR_EMPTY, static_cast<WORD>(ConsoleColor::Black));
-const Cell Cell::borderCell(Cell::Type::Border);
-const Cell Cell::blockCell(Cell::Type::Block);
+const Cell Cell::borderCell(Cell::Type::Border, Cell::CHAR_BLOCK, static_cast<WORD>(ConsoleColor::White) << 4);
+const Cell Cell::blockCell(Cell::Type::Block, Cell::CHAR_BLOCK);
 
 Cell::Cell(Type type)
 	: mType(type) {}
@@ -58,4 +58,16 @@ WORD Cell::GetAttributes() const
 void Cell::SetAttributes(WORD ColorAttr)
 {
 	mColorAttr = ColorAttr;
+}
+
+void Cell::SetForegroundColor(ConsoleColor color)
+{
+	mColorAttr &= 0xFFF0;
+	mColorAttr |= static_cast<WORD>(color);
+}
+
+void Cell::SetBackgroundColor(ConsoleColor color)
+{
+	mColorAttr &= 0xFF0F;
+	mColorAttr |= static_cast<WORD>(color) << 4;
 }

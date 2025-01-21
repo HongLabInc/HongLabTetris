@@ -4,9 +4,6 @@
 #include "ConsoleColor.h"
 #include "ModelPointer.h"
 
-extern mat4x4 blockModel[28];
-
-
 class Block {
 
 	ShapeType type;          
@@ -21,7 +18,7 @@ class Block {
 
 
 public:
-	Block(int posX, int posY, ConsoleColor texture);
+	Block(int posX = 0, int posY = 0, ConsoleColor bTexture = ConsoleColor::Black);
 	~Block() = default;
 
 	void Initalize();
@@ -49,7 +46,7 @@ public:
 	int GetX ();
 	int GetY ();
 
-	ConsoleColor GetTexture();
+	ConsoleColor GetTexture() const;
 #pragma endregion
 
 	void SetTexture(ConsoleColor tex);
