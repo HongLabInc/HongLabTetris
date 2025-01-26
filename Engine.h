@@ -4,6 +4,7 @@
 #include "ConsoleRenderer.h"
 #include "ModelPointer.h"
 #include "EventManager.h"
+#include "SceneManager.h"
 
 class GameMode;
 class Engine
@@ -11,8 +12,6 @@ class Engine
 public:
 	explicit Engine(ConsoleRenderer& renderer);
 	~Engine();
-
-	void LoadGameMode(GameMode* newGameMode);
 
 	void Initailize();
 	void Run();
@@ -32,5 +31,6 @@ private:
 	bool quit;
 
 	std::unique_ptr<InputManager> inputManager;
+	std::unique_ptr<SceneManager> sceneManager;
 	std::unique_ptr<EventManager> eventManager;
 };

@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "GameMode.h"
 
 #include <iostream>
 #include <Windows.h>
@@ -10,9 +9,9 @@ Engine::Engine(ConsoleRenderer& renderer)
 	, quit(false)
 {
 	inputManager = std::make_unique<InputManager>();
+	sceneManager = std::make_unique<SceneManager>(renderer, inputManager.get());
 	eventManager = std::make_unique<EventManager>();
 
-	LoadGameMode(new GameMode(renderer,GameMode::GameModeType::Single,inputManager.get(),eventManager.get()));
 
 }
  
@@ -26,10 +25,7 @@ Engine::~Engine()
 
 }
 
-void Engine::LoadGameMode(GameMode * newGameMode)
-{
-	gameMode = newGameMode;
-}
+
 
 void Engine::Initailize()
 {
@@ -77,6 +73,7 @@ void Engine::Run()
 
 			if (frameUntilRender <= 0)
 			{
+
 				Update(deltaTime);
 				Draw();
 				frameUntilRender = INPUT_FREQUENCY_MULTIPLIER;
@@ -95,14 +92,14 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	gameMode->Update();
+	sceneManager->Update();
 
 	//Sleep(500);
 }
 
 void Engine::Draw()
 {
-	gameMode->Draw();
+	sceneManager->Draw();
 }
 
 void Engine::QuitGame()
