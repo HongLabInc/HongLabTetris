@@ -320,8 +320,6 @@ void TetrisBoard::MoveLines() {
 
 void TetrisBoard::Draw()
 {
-
-   
     ClearBlockImage();
 
     if (mIsBlockActive)
