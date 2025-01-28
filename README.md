@@ -2,6 +2,8 @@
 
 ## 함께 만드는 테트리스 ([디스코드](https://discord.com/channels/1126579018238545990/1324896413838082169))
 
+[![](https://img.youtube.com/vi/7Burx7zTn6E/hqdefault.jpg)](https://www.youtube.com/watch?v=7Burx7zTn6E)
+
 - 이 프로젝트 진행과 관련된 모든 내용들은 참여자들의 제안에 따라 변경될 수 있습니다.
 - 모든 결정은 [홍정모](https://www.linkedin.com/in/jeong-mo-hong-63209ab4/) 개인의 주관적인 판단에 따릅니다. 실제로는 참여자들의 의견을 반영하지만 커뮤니티의 무의미한 에너지 낭비를 막기 위한 규정입니다.
 
