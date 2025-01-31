@@ -1,7 +1,6 @@
 #include "Engine.h"
 
 #include <iostream>
-#include <Windows.h>
 
 Engine::Engine(ConsoleRenderer& renderer)
 	: consoleRenderer(renderer)
@@ -12,7 +11,7 @@ Engine::Engine(ConsoleRenderer& renderer)
 	sceneManager = std::make_unique<SceneManager>(renderer, inputManager.get());
 	eventManager = std::make_unique<EventManager>();
 
-
+	client = std::make_shared<Client>();
 }
  
 Engine::~Engine()
@@ -23,6 +22,9 @@ Engine::~Engine()
 		gameMode = nullptr;
 	}
 
+	if (client != nullptr)
+		client->Stop();
+
 }
 
 
@@ -30,6 +32,21 @@ Engine::~Engine()
 void Engine::Initailize()
 {
 	InitializeModelPointers();
+
+
+	std::string host = "127.0.0.1"; // 서버 호스트
+	unsigned short port = 12345;     // 서버 포트
+
+	if (!client->InitializeAsClient(host, port)) {
+		std::cerr << "클라이언트 초기화 실패. 게임을 종료합니다.\n";
+		QuitGame();
+		return;
+	}
+
+	client->SetMessageReceivedCallback(
+		[this](const std::string& message) { HandleNetworkMessage(message); }
+	);
+
 }
 
 void Engine::Run()
@@ -83,6 +100,12 @@ void Engine::Run()
 		}
 
 	}
+
+
+	// 게임 종료 시 클라이언트 정리
+	if (client) {
+		client->Stop();
+	}
 }
 
 void Engine::ProcessInput()
@@ -105,4 +128,28 @@ void Engine::Draw()
 void Engine::QuitGame()
 {
 	quit = true;
+}
+
+
+
+
+// Handle Network Message
+void Engine::HandleNetworkMessage(const std::string& message)
+{
+	// 수신한 네트워크 메시지 처리
+	std::cout << "네트워크 메시지 수신: " << message << std::endl;
+
+	// 메시지에 따라 게임 상태 업데이트
+	if (message == "PlayerJump")
+	{
+
+	}
+	// 기타 메시지 처리...
+}
+
+void Engine::SendNetworkMessage(const std::string& message)
+{
+	if (client) {
+		client->Send(message);
+	}
 }
