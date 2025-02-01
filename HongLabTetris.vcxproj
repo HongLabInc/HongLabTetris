@@ -152,6 +152,7 @@
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ColorManager.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="ConsoleFrame.h" />
     <ClInclude Include="ConsoleRenderer.h" />
     <ClInclude Include="Engine.h" />

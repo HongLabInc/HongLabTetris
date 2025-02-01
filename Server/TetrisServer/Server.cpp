@@ -1,197 +1,207 @@
 #include "Server.h"
+#include "ClientSession.h"
+#include "GameRoom.h"
+
 #include <iostream>
 #include <algorithm>
+#include <thread>
+#include <mutex>
+#include <memory>
+#include <string>
+#include <vector>
+#include <map>
+#include <boost/asio.hpp>
 
+using boost::asio::ip::tcp;
 
-Server::Server() {}
+//
+// 생성자, 소멸자 및 기본 초기화
+//
+Server::Server()
+    : acceptor(nullptr)
+{}
 
 Server::~Server() {
     Stop();
+    if (ioThread.joinable()) {
+        ioThread.join();
+    }
 }
 
 bool Server::InitializeAsServer(unsigned short port) {
-
     try {
-        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
-        acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(ioContext, endpoint);
-
+        tcp::endpoint endpoint(tcp::v4(), port);
+        acceptor = std::make_unique<tcp::acceptor>(ioContext, endpoint);
+        
         StartAccept();
-
+        
+        // io_context를 별도 스레드에서 실행
         ioThread = std::thread([this]() {
             ioContext.run();
         });
-
-        std::wcout << L"서버가 포트 " << port << L"에서 시작되었습니다." << std::endl;
-
-        return true;
-
-    } 
-    catch (std::exception& e) {
-        std::cerr << "서버 초기화 오류: " << e.what() << std::endl;
+    } catch (std::exception& e) {
+        std::cerr << "InitializeAsServer 예외: " << e.what() << std::endl;
         return false;
     }
+    return true;
+}
+
+void Server::Stop() {
+    ioContext.stop();
+    if (acceptor) {
+        boost::system::error_code ec;
+        acceptor->close(ec);
+    }
+    CloseAllSessions();
 }
 
 void Server::SetMessageReceivedCallback(MessageReceivedCallback callback) {
     messageReceivedCallback = callback;
 }
 
+//
+// 전체 클라이언트에게 메시지 브로드캐스트 (각 ClientSession::deliver() 호출)
+//
 void Server::Broadcast(const std::string& message) {
     std::lock_guard<std::mutex> lock(sessionsMutex);
     for (auto& session : clientSessions) {
-        StartWrite(session, message + "\n"); // 메시지 구분자 추가
+        session->deliver(message);
     }
 }
 
-void Server::SendToSocket(boost::asio::ip::tcp::socket* socketPtr, const std::string& message) {
-    auto socket = GetSocketFromPointer(socketPtr);
-    if (socket) {
-        std::lock_guard<std::mutex> lock(sessionsMutex);
-        for (auto& session : clientSessions) {
-            if (session->socket.get() == socketPtr) {
-                StartWrite(session, message + "\n"); // 메시지 구분자 추가
-                break;
+//
+// 특정 소켓에 메시지 전송 (비동기 쓰기)
+// (ClientSession의 deliver()를 사용하는 것이 권장되지만, 기존 인터페이스를 위해 구현)
+//
+void Server::SendToSocket(tcp::socket* socketPtr, const std::string& message) {
+    if (socketPtr && socketPtr->is_open()) {
+        auto writeBuffer = std::make_shared<std::string>(message);
+        boost::asio::async_write(*socketPtr,
+            boost::asio::buffer(*writeBuffer),
+            [writeBuffer](const boost::system::error_code& ec, std::size_t /*bytesTransferred*/) {
+            if (ec) {
+                std::cerr << "SendToSocket async_write 오류: " << ec.message() << std::endl;
             }
         }
+        );
     }
 }
 
-std::shared_ptr<boost::asio::ip::tcp::socket> Server::GetSocketFromPointer(boost::asio::ip::tcp::socket* socketPtr) {
-    std::lock_guard<std::mutex> lock(sessionsMutex);
-    for (auto& session : clientSessions) {
-        if (session->socket.get() == socketPtr) {
-            return session->socket;
-        }
+//
+// 방 관리 관련 함수
+//
+std::shared_ptr<GameRoom> Server::GetRoom(const std::string& roomName) {
+    std::lock_guard<std::mutex> lock(roomsMutex);
+    auto it = rooms.find(roomName);
+    if (it != rooms.end()) {
+        return it->second;
     }
     return nullptr;
 }
 
-void Server::Stop() {
-    ioContext.stop();
-    if (ioThread.joinable()) {
-        ioThread.join();
+void Server::JoinRoom(std::shared_ptr<ClientSession> session, const std::string& roomName) {
+    std::shared_ptr<GameRoom> room;
+    {
+        std::lock_guard<std::mutex> lock(roomsMutex);
+        auto it = rooms.find(roomName);
+        if (it == rooms.end()) {
+            room = std::make_shared<GameRoom>(roomName);
+            rooms[roomName] = room;
+        } else {
+            room = it->second;
+        }
     }
-
-    CloseAllSessions();
+    if (room) {
+        // GameRoom은 세션을 추가하는 AddClient()를 제공한다고 가정
+        room->AddClient(session);
+        session->setRoomName(roomName);
+    }
 }
 
+void Server::LeaveRoom(std::shared_ptr<ClientSession> session) {
+    std::lock_guard<std::mutex> lock(roomsMutex);
+    for (auto& pair : rooms) {
+        // GameRoom은 세션 제거를 위한 RemoveClient()를 제공한다고 가정
+        pair.second->RemoveClient(session);
+    }
+    session->setRoomName("");
+}
+
+void Server::ListRooms(std::shared_ptr<ClientSession> session) {
+    std::string roomList = "Rooms: ";
+    {
+        std::lock_guard<std::mutex> lock(roomsMutex);
+        for (auto& pair : rooms) {
+            roomList += pair.first + " ";
+        }
+    }
+    session->deliver(roomList);
+}
+
+//
+// 연결 수락 관련 함수 
+//
 void Server::StartAccept() {
-    auto socket = std::make_shared<boost::asio::ip::tcp::socket>(ioContext);
-    acceptor->async_accept(*socket,
-        [this, socket](const boost::system::error_code& error) {
-        HandleAccept(socket, error);
+    // 새 ClientSession 생성 (내부에 소켓 생성)
+    auto session = std::make_shared<ClientSession>(ioContext);
+    std::cout << "New Client try to connection" << std::endl;
+    acceptor->async_accept(session->socket(),
+        [this, session](const boost::system::error_code& error) {
+        HandleAccept(session, error);
     }
     );
 }
 
-void Server::HandleAccept(std::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code& error) {
+void Server::HandleAccept(std::shared_ptr<ClientSession> session, const boost::system::error_code& error) {
     if (!error) {
-        auto session = std::make_shared<ClientSession>(ioContext);
-        session->socket = socket;
-
+        std::cout << "New Client is connected" << std::endl;
         {
             std::lock_guard<std::mutex> lock(sessionsMutex);
             clientSessions.push_back(session);
+            std::cout << "Total Clients: " << clientSessions.size() << std::endl;
+
         }
-
-        StartRead(session);
-        std::cout << "Client is connected" << std::endl;
-    } else {
-        std::cerr << "수락 오류: " << error.message() << std::endl;
-    }
-
-    StartAccept(); // 다음 클라이언트 수락 시작
-}
-
-void Server::StartRead(std::shared_ptr<ClientSession> session) {
-    boost::asio::async_read_until(*session->socket, session->readBuffer, '\n',
-        boost::asio::bind_executor(session->strand,
-        [this, session](const boost::system::error_code& error, std::size_t bytesTransferred) {
-        HandleRead(session, error, bytesTransferred);
-    }
-    )
-    );
-}
-
-void Server::HandleRead(std::shared_ptr<ClientSession> session, const boost::system::error_code& error, std::size_t bytesTransferred) {
-    if (!error) {
-        std::istream is(&session->readBuffer);
-        std::string message;
-        std::getline(is, message); // '\n'을 기준으로 메시지 분리
-
-        std::cout << "받은 메시지: " << message << std::endl;
-
-        if (messageReceivedCallback) {
-            messageReceivedCallback(message, session->socket.get());
-        }
-
-        StartRead(session); // 다음 읽기 시작
-    } else {
-        if (error == boost::asio::error::eof) {
-            std::cout << "클라이언트가 연결을 종료했습니다." << std::endl;
-        } else {
-            std::cerr << "읽기 오류 또는 연결 종료: " << error.message() << std::endl;
-        }
-        RemoveSession(session);
-    }
-}
-
-void Server::StartWrite(std::shared_ptr<ClientSession> session, const std::string& message) {
-    boost::asio::post(session->strand, [this, session, message]() {
-        bool writeInProgress = !session->writeQueue.empty();
-        session->writeQueue.push_back(message);
-        if (!writeInProgress) {
-            boost::asio::async_write(*session->socket, boost::asio::buffer(session->writeQueue.front()),
-                boost::asio::bind_executor(session->strand,
-                [this, session](const boost::system::error_code& error, std::size_t /*bytesTransferred*/) {
-                HandleWrite(session, error, 0);
+        // ClientSession의 메시지 처리 콜백을 서버의 messageReceivedCallback과 연결
+        session->setMessageHandler([this](const std::string& message, std::shared_ptr<ClientSession> session) {
+            if (messageReceivedCallback) {
+                messageReceivedCallback(message, &session->socket());
             }
-            )
-            );
-        }
-    });
-}
-
-void Server::HandleWrite(std::shared_ptr<ClientSession> session, const boost::system::error_code& error, std::size_t /*bytesTransferred*/) {
-    if (!error) {
-        session->writeQueue.pop_front();
-        if (!session->writeQueue.empty()) {
-            boost::asio::async_write(*session->socket, boost::asio::buffer(session->writeQueue.front()),
-                boost::asio::bind_executor(session->strand,
-                [this, session](const boost::system::error_code& error, std::size_t /*bytesTransferred*/) {
-                HandleWrite(session, error, 0);
-            }
-            )
-            );
-        }
+        });
+        // 세션 내에서 비동기 읽기를 시작 (내부적으로 doRead() 호출)
+        session->start();
     } else {
-        std::cerr << "쓰기 오류: " << error.message() << std::endl;
-        RemoveSession(session);
+        std::cerr << "연결 수락 오류: " << error.message() << std::endl;
     }
+    
+    std::cout << "Wait Next client" << std::endl;
+    StartAccept();
 }
 
+//
+// 세션 제거 및 소켓 종료
+//
+void Server::RemoveSession(std::shared_ptr<ClientSession> session) {
+    {
+        std::lock_guard<std::mutex> lock(sessionsMutex);
+        auto it = std::remove(clientSessions.begin(), clientSessions.end(), session);
+        clientSessions.erase(it, clientSessions.end());
+    }
+    boost::system::error_code ec;
+    session->socket().shutdown(tcp::socket::shutdown_both, ec);
+    session->socket().close(ec);
+}
+
+//
+// 모든 클라이언트 세션 종료
+//
 void Server::CloseAllSessions() {
     std::lock_guard<std::mutex> lock(sessionsMutex);
     for (auto& session : clientSessions) {
-        if (session->socket->is_open()) {
-            boost::system::error_code ec;
-            session->socket->close(ec);
-        }
+        boost::system::error_code ec;
+        session->socket().shutdown(tcp::socket::shutdown_both, ec);
+        session->socket().close(ec);
+
+        std::cout << "Session is closed" << std::endl;
     }
     clientSessions.clear();
-}
-
-void Server::RemoveSession(std::shared_ptr<ClientSession> session) {
-    std::lock_guard<std::mutex> lock(sessionsMutex);
-    auto it = std::remove(clientSessions.begin(), clientSessions.end(), session);
-    if (it != clientSessions.end()) {
-        clientSessions.erase(it, clientSessions.end());
-    }
-
-    if (session->socket->is_open()) {
-        boost::system::error_code ec;
-        session->socket->close(ec);
-    }
-
-    std::cout << "클라이언트 연결이 종료되었습니다." << std::endl;
 }
