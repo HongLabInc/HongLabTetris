@@ -1,8 +1,8 @@
 // PlayingScene.h
 #pragma once
 #include "Scene.h"
-#include "GameModeType.h"
-#include "TetrisBoard.h"
+#include "../GameModeType.h"
+#include "../TetrisBoard.h"
 
 class PlayingScene: public Scene {
 public:

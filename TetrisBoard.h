@@ -3,9 +3,9 @@
 #include <array>
 #include "ConsoleFrame.h"
 #include "Block.h"
-#include "InputManager.h"
-#include "ColorManager.h"
-#include "EventManager.h"
+#include "Managers/InputManager.h"
+#include "Managers/ColorManager.h"
+#include "Managers/EventManager.h"
 #include "ConsoleRenderer.h"
 
 class TetrisBoard

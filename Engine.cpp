@@ -4,7 +4,6 @@
 
 Engine::Engine(ConsoleRenderer& renderer)
 	: consoleRenderer(renderer)
-	, gameMode(nullptr)
 	, quit(false)
 {
 	inputManager = std::make_unique<InputManager>();
@@ -16,12 +15,6 @@ Engine::Engine(ConsoleRenderer& renderer)
  
 Engine::~Engine()
 {
-	if(gameMode != nullptr)
-	{
-		delete gameMode;
-		gameMode = nullptr;
-	}
-
 	if (client != nullptr)
 		client->Stop();
 
@@ -111,6 +104,7 @@ void Engine::Run()
 void Engine::ProcessInput()
 {
 	inputManager->AddPressedKeysToQueue();
+	inputManager->AddMouseEventsToQueue();
 }
 
 void Engine::Update(float deltaTime)

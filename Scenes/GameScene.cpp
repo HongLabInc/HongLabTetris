@@ -1,5 +1,4 @@
 #include "GameScene.h"
-#include "SceneManager.h"
 
 PlayingScene::PlayingScene(ConsoleRenderer & renderer, InputManager * im, SceneManager * sm, GameModeType mode)
     : Scene(renderer, im, sm), mCurrentMode(mode) {
