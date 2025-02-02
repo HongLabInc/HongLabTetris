@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
-#include "Scene.h"
-#include "SceneType.h"
-#include "ConsoleRenderer.h"
+#include "../Scenes/Scene.h"
+#include "../Scenes/SceneType.h"
+#include "../ConsoleRenderer.h"
 #include "InputManager.h"
+
+class Scene;
 
 // SceneManager: 현재 Scene을 보유하며, Scene 전환, 업데이트, 렌더링을 담당
 class SceneManager {

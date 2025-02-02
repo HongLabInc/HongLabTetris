@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <string>
 #include "TetrisBoard.h"
-#include "ConsoleColor.h"
+#include "Managers/ConsoleColor.h"
 
 const std::array<int, 100> TetrisBoard::scoreTable = TetrisBoard::generateScoreTable();
 TetrisBoard::TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height,InputManager* im,EventManager* em)

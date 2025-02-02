@@ -1,7 +1,7 @@
 #include <cassert>
 #include "ConsoleFrame.h"
 #include "ConsoleRenderer.h"
-#include "ConsoleColor.h"
+#include "Managers/ConsoleColor.h"
 
 ConsoleFrame::ConsoleFrame(int x, int y, int width, int height)
     : mX(x)

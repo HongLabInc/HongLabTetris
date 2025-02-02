@@ -4,12 +4,12 @@
 #include <winsock2.h>
 #include <windows.h> // 필요한 경우
 
-#include "ColorManager.h"
-#include "InputManager.h"
+#include "Managers/ColorManager.h"
+#include "Managers/InputManager.h"
 #include "ConsoleRenderer.h"
 #include "ModelPointer.h"
-#include "EventManager.h"
-#include "SceneManager.h"
+#include "Managers/EventManager.h"
+#include "Managers/SceneManager.h"
 #include "Client.h"
 
 class GameMode;
@@ -36,8 +36,6 @@ private:
 
 private:
 	ConsoleRenderer& consoleRenderer;
-	GameMode* gameMode = nullptr;
-
 	bool quit;
 
 	std::unique_ptr<InputManager> inputManager;

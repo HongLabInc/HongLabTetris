@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include "ConsoleColor.h"
+#include "Managers/ConsoleColor.h"
 
 class Cell
 {

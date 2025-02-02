@@ -1,11 +1,11 @@
 #pragma once
 
+#include "../ConsoleFrame.h"
+#include "../ConsoleRenderer.h"
+#include "../Managers/InputManager.h"
+#include "../Managers/SceneManager.h"
+
 class SceneManager;
-
-#include "ConsoleFrame.h"
-#include "ConsoleRenderer.h"
-#include "InputManager.h"
-
 
 class Scene {
 public:

@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.h"
-#include "GameModeType.h"
-#include "TetrisBoard.h"
+#include "../GameModeType.h"
+#include "../TetrisBoard.h"
 
 class GameOverScene: public Scene {
 

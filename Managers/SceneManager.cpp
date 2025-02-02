@@ -1,7 +1,7 @@
 #include "SceneManager.h"
-#include "MainMenuScene.h"
-#include "GameScene.h"
-#include "GameOverScene.h"
+#include "../Scenes/MainMenuScene.h"
+#include "../Scenes/GameScene.h"
+#include "../Scenes/GameOverScene.h"
 
 SceneManager::SceneManager(ConsoleRenderer& renderer, InputManager* inputManager)
     : mRenderer(renderer)
