@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HongLabTetris", "HongLabTetris.vcxproj", "{2D13CD38-5DEA-4AE5-9B2E-18F608C8DD67}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{6E807417-E431-4E4F-99C1-833ACBAA7E83}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TetrisServer", "Server\TetrisServer\TetrisServer.vcxproj", "{F6D5DFF6-9C45-4648-A1D1-1E9AD051B098}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{2D13CD38-5DEA-4AE5-9B2E-18F608C8DD67}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{F6D5DFF6-9C45-4648-A1D1-1E9AD051B098}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Debug|x64.ActiveCfg = Debug|x64
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Debug|x64.Build.0 = Debug|x64
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Debug|x86.ActiveCfg = Debug|Win32
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Debug|x86.Build.0 = Debug|Win32
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Release|x64.ActiveCfg = Release|x64
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Release|x64.Build.0 = Release|x64
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Release|x86.ActiveCfg = Release|Win32
+		{6E807417-E431-4E4F-99C1-833ACBAA7E83}.Release|x86.Build.0 = Release|Win32
 		{2D13CD38-5DEA-4AE5-9B2E-18F608C8DD67}.Debug|x64.ActiveCfg = Debug|x64
 		{2D13CD38-5DEA-4AE5-9B2E-18F608C8DD67}.Debug|x64.Build.0 = Debug|x64
 		{2D13CD38-5DEA-4AE5-9B2E-18F608C8DD67}.Debug|x86.ActiveCfg = Debug|Win32
