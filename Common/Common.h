@@ -1,6 +1,4 @@
 #pragma once
-// Common.h
-#pragma once
 
 #include <string>
 #include <functional>
