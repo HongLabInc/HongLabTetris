@@ -21,9 +21,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f6d5dff6-9c45-4648-a1d1-1e9ad051b098}</ProjectGuid>
-    <RootNamespace>TetrisServer</RootNamespace>
+    <ProjectGuid>{2d13cd38-5dea-4ae5-9b2e-18f608c8dd67}</ProjectGuid>
+    <RootNamespace>HongLabTetris</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Client</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -102,12 +103,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_WIN32_WINNT=0x0A00</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Common</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Common\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -116,26 +121,65 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_WIN32_WINNT=0x0A00</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Common\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameRoom.h" />
-    <ClInclude Include="ClientSession.h" />
-    <ClInclude Include="Server.h" />
+    <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Managers\ColorManager.cpp" />
+    <ClCompile Include="ConsoleFrame.cpp" />
+    <ClCompile Include="ConsoleRenderer.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Managers\EventManager.cpp" />
+    <ClCompile Include="Managers\UIManager.cpp" />
+    <ClCompile Include="Scenes\GameOverScene.cpp" />
+    <ClCompile Include="Scenes\GameScene.cpp" />
+    <ClCompile Include="GUI\Button.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Managers\InputManager.cpp" />
+    <ClCompile Include="Scenes\MainMenuScene.cpp" />
+    <ClCompile Include="ModelPointer.cpp" />
+    <ClCompile Include="Scenes\Scene.cpp" />
+    <ClCompile Include="Managers\SceneManager.cpp" />
+    <ClCompile Include="TetrisBoard.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClientSession.cpp" />
-    <ClCompile Include="GameRoom.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="Cell.h" />
+    <ClInclude Include="Client.h" />
+    <ClInclude Include="GUI\InteractiveWidget.h" />
+    <ClInclude Include="Managers\ColorManager.h" />
+    <ClInclude Include="ConsoleFrame.h" />
+    <ClInclude Include="ConsoleRenderer.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Managers\ConsoleColor.h" />
+    <ClInclude Include="Managers\EventManager.h" />
+    <ClInclude Include="GameModeType.h" />
+    <ClInclude Include="Managers\UIManager.h" />
+    <ClInclude Include="Scenes\GameOverScene.h" />
+    <ClInclude Include="Scenes\GameScene.h" />
+    <ClInclude Include="GUI\Button.h" />
+    <ClInclude Include="GUI\Widget.h" />
+    <ClInclude Include="Managers\InputManager.h" />
+    <ClInclude Include="Scenes\MainMenuScene.h" />
+    <ClInclude Include="ModelPointer.h" />
+    <ClInclude Include="Scenes\Scene.h" />
+    <ClInclude Include="Managers\SceneManager.h" />
+    <ClInclude Include="Scenes\SceneType.h" />
+    <ClInclude Include="TetrisBoard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
