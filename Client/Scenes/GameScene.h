@@ -6,7 +6,12 @@
 
 class PlayingScene: public Scene {
 public:
-    PlayingScene(ConsoleRenderer& renderer, InputManager* im, SceneManager* sm, GameModeType mode);
+    PlayingScene(
+        ConsoleRenderer& renderer, 
+        InputManager* im, 
+        UIManager* um,
+        SceneManager* sm, 
+        GameModeType mode);
 
     void Update() override;
 

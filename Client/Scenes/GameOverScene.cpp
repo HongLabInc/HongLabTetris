@@ -1,7 +1,11 @@
 #include "GameOverScene.h"
 
-GameOverScene::GameOverScene(ConsoleRenderer & renderer, InputManager * im, SceneManager * sm) 
-	:Scene(renderer, im, sm)
+GameOverScene::GameOverScene(
+	ConsoleRenderer & renderer, 
+	InputManager * im, 
+	UIManager* um, 
+	SceneManager * sm) 
+	:Scene(renderer, im, um, sm)
 {
 
 	posY = 10;

@@ -1,7 +1,12 @@
 #include "GameScene.h"
 
-PlayingScene::PlayingScene(ConsoleRenderer & renderer, InputManager * im, SceneManager * sm, GameModeType mode)
-    : Scene(renderer, im, sm), mCurrentMode(mode) {
+PlayingScene::PlayingScene(
+    ConsoleRenderer & renderer, 
+    InputManager * im,
+    UIManager* um,
+    SceneManager * sm, 
+    GameModeType mode)
+    : Scene(renderer, im, um, sm), mCurrentMode(mode) {
 
 	mRenderer.Clear();
 	mFrame = mRenderer.AddFrame(10, 5, 40, 30);

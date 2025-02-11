@@ -1,6 +1,7 @@
 #include <cassert>
 #include "ConsoleRenderer.h"
 #include "ConsoleFrame.h"
+#include <iostream>
 
 ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
     : mWidth(width)
@@ -30,7 +31,7 @@ ConsoleRenderer::~ConsoleRenderer()
 
 void ConsoleRenderer::Clear()
 {
-    for(auto frame : mFrames)
+    for (auto frame : mFrames)
     {
         delete frame;
     }
@@ -64,7 +65,7 @@ float ConsoleRenderer::GetFrameTime() const
 
 void ConsoleRenderer::RemoveFrame(ConsoleFrame* frame)
 {
-    if(frame == nullptr)
+    if (frame == nullptr)
         return;
 
     auto it = std::find(mFrames.begin(), mFrames.end(), frame);
@@ -115,7 +116,7 @@ void ConsoleRenderer::RenderFrame(ConsoleFrame* frame)
 void ConsoleRenderer::Render()
 {
     assert(mMainFrame != nullptr);
-	RenderFrame(mMainFrame);
+    RenderFrame(mMainFrame);
 
     for (const auto& frame : mFrames)
     {

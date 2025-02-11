@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include <iostream>
 
 #pragma region KeyBoard Method
 
@@ -101,24 +102,7 @@ void InputManager::SetMousePosition(int x, int y) {
 
 POINT InputManager::GetMousePosition() const {
     POINT p = {0, 0};
-    if (GetCursorPos(&p)) {
-        HWND consoleWindow = GetConsoleWindow();
-        if (consoleWindow) {
-            ScreenToClient(consoleWindow, &p);
-            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-            CONSOLE_FONT_INFOEX cfi = {0};
-            cfi.cbSize = sizeof(cfi);
-            if (GetCurrentConsoleFontEx(hConsole, FALSE, &cfi)) {
-                int fontWidth = cfi.dwFontSize.X;
-                int fontHeight = cfi.dwFontSize.Y;
-                if (fontWidth > 0 && fontHeight > 0) {
-                    // 픽셀 좌표를 문자 셀 좌표로 변환
-                    p.x = p.x / fontWidth;
-                    p.y = p.y / fontHeight;
-                }
-            }
-        }
-    }
+    
     return p;
 }
 

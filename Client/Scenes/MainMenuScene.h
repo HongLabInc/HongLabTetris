@@ -12,7 +12,11 @@ class MainMenuScene: public Scene {
     
     void InitializeButtons();
 public:
-    MainMenuScene(ConsoleRenderer& renderer, InputManager* inputManager, SceneManager* sceneManager);
+    MainMenuScene(
+        ConsoleRenderer& renderer,
+        InputManager* inputManager,
+        UIManager* uiManager,
+        SceneManager* sceneManager);
 
     void Update() override;
 
