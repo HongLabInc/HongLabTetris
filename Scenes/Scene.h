@@ -2,9 +2,10 @@
 
 #include "../ConsoleFrame.h"
 #include "../ConsoleRenderer.h"
-#include "../Managers/InputManager.h"
 #include "../Managers/SceneManager.h"
 
+class InputManager;
+class UIManager;
 class SceneManager;
 
 class Scene {
@@ -16,9 +17,16 @@ public:
 
 protected:
     // 필요하다면 protected 생성자로 제한
-    Scene(ConsoleRenderer& renderer, InputManager* inputManager, SceneManager* sceneManager);
+    Scene(
+        ConsoleRenderer& renderer, 
+        InputManager* inputManager,
+        UIManager* uiManager,
+        SceneManager* sceneManager
+    );
+
     ConsoleRenderer&   mRenderer;
 	ConsoleFrame*      mFrame;
     InputManager*      mInputManager;
+    UIManager*         mUIManager;
     SceneManager*      mSceneManager;
 };

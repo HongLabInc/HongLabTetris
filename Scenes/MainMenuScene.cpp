@@ -23,8 +23,12 @@ void MainMenuScene::InitializeButtons()
     });
 }
 
-MainMenuScene::MainMenuScene(ConsoleRenderer & renderer, InputManager * inputManager, SceneManager* sceneManager)
-    : Scene(renderer, inputManager, sceneManager) {
+MainMenuScene::MainMenuScene(
+    ConsoleRenderer & renderer, 
+    InputManager * inputManager, 
+    UIManager* uiManager, 
+    SceneManager* sceneManager)
+    : Scene(renderer, inputManager, uiManager, sceneManager) {
     
      mRenderer.Clear();
      mFrame = mRenderer.AddFrame(0, 0, 40, 30);
@@ -44,15 +48,21 @@ void MainMenuScene::Update() {
     auto mousePos = mInputManager->GetMousePosition();
     int mouseX = mousePos.x;
     int mouseY = mousePos.y;
+    int relativeX = mousePos.x - mFrame->GetX();
+    int relativeY = mousePos.y - mFrame->GetY();
 
-    if (key == VK_RETURN || button == MOUSE_LEFT) {
+    if (key == VK_RETURN) {
         mSceneManager->RequestSceneChange(SceneType::Playing);
     }
- 
-    if (button == MOUSE_LEFT && mSingleMode.contains(mouseX, mouseY))
-        mSingleMode.click();
-    if (button == MOUSE_LEFT && mMultiMode.contains(mouseX, mouseY))
-        mMultiMode.click();
+
+    if (button == MOUSE_LEFT) {
+        if (mSingleMode.contains(relativeX, relativeY)) {
+            mFrame->SetText(0, 1, L"Single Button Clicked!");
+        }
+        if (mMultiMode.contains(relativeX, relativeY)) {
+            mFrame->SetText(0, 1, L"Multi Button Clicked!");
+        }
+    }
 
 }
 

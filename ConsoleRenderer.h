@@ -30,6 +30,20 @@ public:
     static constexpr bool RIGHT_SPACE = true;
     static constexpr int CELL_WIDTH = 1 + (LEFT_SPACE ? 1 : 0) + (RIGHT_SPACE ? 1 : 0);
 
+
+    POINT GetWindowPosition() const {
+        return mWindowPosition;
+    }
+    RECT GetClientRect() const {
+        return mClientRect;
+    }
+    SIZE GetFontSize() const {
+        return mFontSize;
+    }
+    RECT GetWindowRect() const {
+        return mWindowRect;
+    }
+
 private:
     void RenderFrame(ConsoleFrame* frame);
 
@@ -43,4 +57,10 @@ private:
 
     ConsoleFrame* mMainFrame; // 바탕화면
     std::vector<ConsoleFrame*> mFrames;
+
+    // 창 위치 및 크기 정보 추가
+    POINT mWindowPosition;     // 창의 스크린 좌표
+    RECT mClientRect;         // 클라이언트 영역
+    SIZE mFontSize;          // 폰트 크기
+    RECT mWindowRect;        // 전체 창 영역
 };

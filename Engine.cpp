@@ -7,7 +7,8 @@ Engine::Engine(ConsoleRenderer& renderer)
 	, quit(false)
 {
 	inputManager = std::make_unique<InputManager>();
-	sceneManager = std::make_unique<SceneManager>(renderer, inputManager.get());
+	uiManager = std::make_unique<UIManager>();
+	sceneManager = std::make_unique<SceneManager>(renderer, inputManager.get(), uiManager.get());
 	eventManager = std::make_unique<EventManager>();
 
 	client = std::make_shared<Client>();

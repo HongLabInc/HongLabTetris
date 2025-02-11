@@ -1,6 +1,7 @@
 #include <cassert>
 #include "ConsoleRenderer.h"
 #include "ConsoleFrame.h"
+#include <iostream>
 
 ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
     : mWidth(width)
@@ -8,17 +9,68 @@ ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
     , mFrameRate(frameRate)
     , mFrameTime(1.0f / frameRate)
 {
-    mActualWidth = mWidth * CELL_WIDTH;
-
+    // 콘솔 핸들 및 기본 설정
     mConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD bufferSize = {(SHORT)mActualWidth, (SHORT)mHeight};
-    SetConsoleScreenBufferSize(mConsoleHandle, bufferSize);
+    if (mConsoleHandle == INVALID_HANDLE_VALUE) {
+        // 에러 처리
+        throw std::runtime_error("Failed to get console handle");
+    }
 
+    // 폰트 정보 설정
+    CONSOLE_FONT_INFOEX cfi = {sizeof(cfi)};
+    if (GetCurrentConsoleFontEx(mConsoleHandle, FALSE, &cfi)) {
+        mFontSize.cx = cfi.dwFontSize.X;
+        mFontSize.cy = cfi.dwFontSize.Y;
+    }
+
+    // 버퍼 크기 설정
+    mActualWidth = mWidth * CELL_WIDTH;
+    COORD bufferSize = {(SHORT)mActualWidth, (SHORT)mHeight};
+
+    // 창 크기 먼저 설정
+    SMALL_RECT windowSize = {0, 0, (SHORT)(mActualWidth - 1), (SHORT)(mHeight - 1)};
+    SetConsoleWindowInfo(mConsoleHandle, TRUE, &windowSize);
+
+    // 버퍼 크기 설정
+    if (!SetConsoleScreenBufferSize(mConsoleHandle, bufferSize)) {
+        throw std::runtime_error("Failed to set console buffer size");
+    }
+
+    // 커서 설정
     CONSOLE_CURSOR_INFO cursorInfo = {1, FALSE};
     SetConsoleCursorInfo(mConsoleHandle, &cursorInfo);
 
+    // 창 위치 및 크기 정보 초기화
+    HWND consoleWindow = GetConsoleWindow();
+    if (consoleWindow) {
+        GetWindowRect();
+        GetClientRect();
+
+        mWindowPosition.x = mWindowRect.left;
+        mWindowPosition.y = mWindowRect.top;
+
+        // 디버깅용 출력
+        std::wcout << L"Window Position: (" << mWindowPosition.x << L", "
+            << mWindowPosition.y << L")\n";
+        std::wcout << L"Client Area: " << (mClientRect.right - mClientRect.left)
+            << L"x" << (mClientRect.bottom - mClientRect.top) << L"\n";
+        std::wcout << L"Font Size: " << mFontSize.cx << L"x" << mFontSize.cy << L"\n";
+    }
+
+    // 버퍼 할당
     mBuffer = new CHAR_INFO[mActualWidth * mHeight];
     mMainFrame = new ConsoleFrame(0, 0, width, height);
+
+    // 초기 지연을 주어 창이 완전히 초기화되도록 함
+    Sleep(100);
+
+    // 초기화 후 최종 위치 다시 확인
+    if (consoleWindow) {
+        GetWindowRect();
+        mWindowPosition.x = mWindowRect.left;
+        mWindowPosition.y = mWindowRect.top;
+    }
+
 }
 
 ConsoleRenderer::~ConsoleRenderer()

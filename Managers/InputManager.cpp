@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include <iostream>
 
 #pragma region KeyBoard Method
 
@@ -104,17 +105,22 @@ POINT InputManager::GetMousePosition() const {
     if (GetCursorPos(&p)) {
         HWND consoleWindow = GetConsoleWindow();
         if (consoleWindow) {
-            ScreenToClient(consoleWindow, &p);
-            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-            CONSOLE_FONT_INFOEX cfi = {0};
-            cfi.cbSize = sizeof(cfi);
-            if (GetCurrentConsoleFontEx(hConsole, FALSE, &cfi)) {
-                int fontWidth = cfi.dwFontSize.X;
-                int fontHeight = cfi.dwFontSize.Y;
-                if (fontWidth > 0 && fontHeight > 0) {
+            if (ScreenToClient(consoleWindow, &p)) {
+                HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                CONSOLE_FONT_INFOEX cfi = {0};
+                cfi.cbSize = sizeof(cfi);
+
+                if (GetCurrentConsoleFontEx(hConsole, FALSE, &cfi)) {
                     // 픽셀 좌표를 문자 셀 좌표로 변환
-                    p.x = p.x / fontWidth;
-                    p.y = p.y / fontHeight;
+                    if (cfi.dwFontSize.X > 0 && cfi.dwFontSize.Y > 0) {
+                        p.x = p.x / cfi.dwFontSize.X;
+                        p.y = p.y / cfi.dwFontSize.Y;
+                    }
+
+                    // 디버깅용 좌표 출력
+                    #ifdef _DEBUG
+                    std::wcout << L"Mouse Cell Position: " << p.x << L", " << p.y << std::endl;
+                    #endif
                 }
             }
         }

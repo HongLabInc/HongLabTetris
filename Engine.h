@@ -6,6 +6,7 @@
 
 #include "Managers/ColorManager.h"
 #include "Managers/InputManager.h"
+#include "Managers/UIManager.h"
 #include "ConsoleRenderer.h"
 #include "ModelPointer.h"
 #include "Managers/EventManager.h"
@@ -39,6 +40,7 @@ private:
 	bool quit;
 
 	std::unique_ptr<InputManager> inputManager;
+	std::unique_ptr<UIManager> uiManager;
 	std::unique_ptr<SceneManager> sceneManager;
 	std::unique_ptr<EventManager> eventManager;
 

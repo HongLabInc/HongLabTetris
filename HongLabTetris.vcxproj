@@ -131,12 +131,12 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Cell.cpp" />
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="GUI\Widget.cpp" />
     <ClCompile Include="Managers\ColorManager.cpp" />
     <ClCompile Include="ConsoleFrame.cpp" />
     <ClCompile Include="ConsoleRenderer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Managers\EventManager.cpp" />
+    <ClCompile Include="Managers\UIManager.cpp" />
     <ClCompile Include="Scenes\GameOverScene.cpp" />
     <ClCompile Include="Scenes\GameScene.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
@@ -153,6 +153,7 @@
     <ClInclude Include="Archive\deprecated_BlockMap.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="GUI\InteractiveWidget.h" />
     <ClInclude Include="Managers\ColorManager.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ConsoleFrame.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Managers\ConsoleColor.h" />
     <ClInclude Include="Managers\EventManager.h" />
     <ClInclude Include="GameModeType.h" />
+    <ClInclude Include="Managers\UIManager.h" />
     <ClInclude Include="Scenes\GameOverScene.h" />
     <ClInclude Include="Scenes\GameScene.h" />
     <ClInclude Include="GUI\Button.h" />

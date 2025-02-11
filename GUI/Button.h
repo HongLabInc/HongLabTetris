@@ -1,34 +1,34 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "Widget.h"
-#include <string>
+#include "InteractiveWidget.h"
 #include <functional>
+#include <string>
 
-// Button은 Widget을 상속받아 구현한 GUI 컴포넌트입니다.
-class Button: public Widget {
+class Button: public InteractiveWidget {
 public:
     Button();
     Button(InputManager* inputManager, ConsoleFrame* frame);
     virtual ~Button();
 
+    // Widget 인터페이스 구현
     virtual void Update() override;
     virtual void draw() override;
+    virtual bool contains(int mouseX, int mouseY) const override;
 
+    // InteractiveWidget 인터페이스 구현: 마우스 클릭 처리
+    virtual void OnMouseClick() override;
+
+    // 텍스트 관련 메서드
     void setText(const std::wstring& text);
     std::wstring getText() const;
 
-    bool contains(int mouseX, int mouseY) const;
-
-    // 버튼 클릭 시 실행될 콜백 함수를 설정하는 함수
+    // 클릭 이벤트에 사용할 콜백 등록
     void setOnClick(std::function<void()> callback);
 
-    // 버튼 클릭 이벤트를 외부에서 직접 트리거할 수 있도록 하는 함수
-    void click();
-
 private:
-    std::wstring text;                     // 버튼에 표시할 텍스트
-    std::function<void()> onClick;        // 클릭 이벤트 콜백 함수
+    std::wstring text;
+    std::function<void()> onClick;
 };
 
 #endif // BUTTON_H

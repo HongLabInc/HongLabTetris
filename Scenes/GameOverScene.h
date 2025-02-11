@@ -8,7 +8,11 @@ class GameOverScene: public Scene {
     constexpr static int END_WIDTH = 20;
     constexpr static int END_HEIGHT = 10;
 public:
-    GameOverScene(ConsoleRenderer& renderer, InputManager* im, SceneManager* sm);
+    GameOverScene(
+        ConsoleRenderer& renderer, 
+        InputManager* im,
+        UIManager* um,
+        SceneManager* sm);
 
     void Update() override;
 
