@@ -102,29 +102,7 @@ void InputManager::SetMousePosition(int x, int y) {
 
 POINT InputManager::GetMousePosition() const {
     POINT p = {0, 0};
-    if (GetCursorPos(&p)) {
-        HWND consoleWindow = GetConsoleWindow();
-        if (consoleWindow) {
-            if (ScreenToClient(consoleWindow, &p)) {
-                HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-                CONSOLE_FONT_INFOEX cfi = {0};
-                cfi.cbSize = sizeof(cfi);
-
-                if (GetCurrentConsoleFontEx(hConsole, FALSE, &cfi)) {
-                    // 픽셀 좌표를 문자 셀 좌표로 변환
-                    if (cfi.dwFontSize.X > 0 && cfi.dwFontSize.Y > 0) {
-                        p.x = p.x / cfi.dwFontSize.X;
-                        p.y = p.y / cfi.dwFontSize.Y;
-                    }
-
-                    // 디버깅용 좌표 출력
-                    #ifdef _DEBUG
-                    std::wcout << L"Mouse Cell Position: " << p.x << L", " << p.y << std::endl;
-                    #endif
-                }
-            }
-        }
-    }
+    
     return p;
 }
 
