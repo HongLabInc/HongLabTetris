@@ -6,7 +6,7 @@
 
 int main()
 {
-    ConsoleRenderer renderer(1280, 720, 240.0f); // 가로, 세로, 주사율
+    ConsoleRenderer renderer(300, 200, 240.0f); // 가로, 세로, 주사율
     Engine engine(renderer);
     engine.Initailize();
     engine.Run();
