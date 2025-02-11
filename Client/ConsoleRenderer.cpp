@@ -12,7 +12,6 @@ ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
     mActualWidth = mWidth * CELL_WIDTH;
 
     mConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-    
     COORD bufferSize = {(SHORT)mActualWidth, (SHORT)mHeight};
     SetConsoleScreenBufferSize(mConsoleHandle, bufferSize);
 
@@ -21,7 +20,6 @@ ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
 
     mBuffer = new CHAR_INFO[mActualWidth * mHeight];
     mMainFrame = new ConsoleFrame(0, 0, width, height);
-
 }
 
 ConsoleRenderer::~ConsoleRenderer()
@@ -33,7 +31,7 @@ ConsoleRenderer::~ConsoleRenderer()
 
 void ConsoleRenderer::Clear()
 {
-    for(auto frame : mFrames)
+    for (auto frame : mFrames)
     {
         delete frame;
     }
@@ -67,7 +65,7 @@ float ConsoleRenderer::GetFrameTime() const
 
 void ConsoleRenderer::RemoveFrame(ConsoleFrame* frame)
 {
-    if(frame == nullptr)
+    if (frame == nullptr)
         return;
 
     auto it = std::find(mFrames.begin(), mFrames.end(), frame);
@@ -118,7 +116,7 @@ void ConsoleRenderer::RenderFrame(ConsoleFrame* frame)
 void ConsoleRenderer::Render()
 {
     assert(mMainFrame != nullptr);
-	RenderFrame(mMainFrame);
+    RenderFrame(mMainFrame);
 
     for (const auto& frame : mFrames)
     {

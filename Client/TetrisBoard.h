@@ -39,7 +39,7 @@ private:
     void MoveLines();
     static std::array<int, 100> generateScoreTable();
 
-    static constexpr int mUpdateInterval = 100;
+    static constexpr int mUpdateInterval = 5;
     static constexpr int mFirstInputDelayFrames = 8;
     static constexpr int mContinuousInputDelayFrames = 24;
     static constexpr int mQueueFrameSize = 8;
