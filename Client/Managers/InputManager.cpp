@@ -3,10 +3,18 @@
 
 #pragma region KeyBoard Method
 
+bool InputManager::IsKeyPressed(int key)
+{
+    return (GetAsyncKeyState(key) & 0x8000) != 0;
+}
+bool InputManager::IsKeyDown(int key)
+{
+    return false;
+}
+
 void InputManager::EnqueueInput(int key) {
 	mInputQueue.push(key);
 }
-
 int InputManager::DequeueInput() {
 	
 	if(mInputQueue.empty())
@@ -17,7 +25,6 @@ int InputManager::DequeueInput() {
 	return key;
 
 }
-
 void InputManager::AddPressedKeysToQueue() {
 
     using clock = std::chrono::steady_clock;
@@ -43,43 +50,17 @@ void InputManager::AddPressedKeysToQueue() {
     }
 }
 
-bool InputManager::IsKeyPressed(int key)
-{
-	return (GetAsyncKeyState(key) & 0x8000) != 0;
-}
-
-bool InputManager::IsKeyDown(int key)
-{
-	return false;
-}
 #pragma endregion
 
+
 #pragma region Mouse Method
+
 bool InputManager::IsMousePressed(MouseButton button) {
-    
-    UINT vkButton = 0;
-    switch (button) {
-    case MOUSE_LEFT:
-        vkButton = VK_LBUTTON;
-        break;
-    case MOUSE_RIGHT:
-        vkButton = VK_RBUTTON;
-        break;
-    case MOUSE_MIDDLE:
-        vkButton = VK_MBUTTON;
-        break;
-
-    default:
-        return false;
-    }
-
-    return (GetAsyncKeyState(vkButton) & 0x8000) != 0;
+    return m_mousePressed[button];
 }
 
 bool InputManager::IsMouseDown(MouseButton button) {
-    if (button < 0 || button >= MOUSE_BUTTON_COUNT)
-        return false;
-    return (m_mousePressed[button] && !prevMouseState[button]);
+    return m_mousePressed[button] && !prevMouseState[button];
 }
 
 void InputManager::EnqueueMouseInput(int eventCode) {
@@ -87,48 +68,114 @@ void InputManager::EnqueueMouseInput(int eventCode) {
 }
 
 int InputManager::DequeueMouseInput() {
-    if (mMouseInputQueue.empty()) {
-        return -1; // 또는 적절한 무효 값
-    }
-    int eventCode = mMouseInputQueue.front();
+    if (mMouseInputQueue.empty()) return -1;
+    int event = mMouseInputQueue.front();
     mMouseInputQueue.pop();
-    return eventCode;
-}
-
-void InputManager::SetMousePosition(int x, int y) {
-    m_mousePosition.x = x;
-    m_mousePosition.y = y;
+    return event;
 }
 
 POINT InputManager::GetMousePosition() const {
-    POINT p = {0, 0};
-    
-    return p;
+    return m_mousePosition;
 }
 
-void InputManager::AddMouseEventsToQueue()
-{
-    using clock = std::chrono::steady_clock;
-    auto now = clock::now();
-    int EventsToCheck[] = {MOUSE_LEFT, MOUSE_MIDDLE, MOUSE_RIGHT};
+void InputManager::SetMousePosition(int x, int y) {
+    m_mousePosition = {x, y};
+}
 
-    for (int button : EventsToCheck) {
-        if (IsMousePressed(static_cast<MouseButton>(button))) {
-            if (!prevMouseState[button]) {
-                EnqueueMouseInput(button);
-                prevMouseState[button] = true;
-                lastMouseEventTime[button] = now;
-            } else {
-                if (now - lastMouseEventTime[button] >= continuousInputInterval) {
-                    lastMouseEventTime[button] = now;  // 시간 갱신
-                }
-            }
-        } else {
-            prevMouseState[button] = false;
-        }
+// 새로 추가된 이벤트 관련 메서드들
+
+size_t InputManager::AddMouseListener(MouseEventCallback callback) {
+    size_t newId = mNextListenerId++;
+    mMouseListeners[newId] = callback;
+    return newId;
+}
+
+void InputManager::RemoveMouseListener(size_t id) {
+    mMouseListeners.erase(id);
+}
+
+void InputManager::ProcessMouseEvent(MouseButton button, bool isPressed) {
+    MouseEvent event{
+        button,
+        m_mousePosition,
+        isPressed
+    };
+
+    auto listenersCopy = mMouseListeners;
+    for (const auto& [id, listener] : listenersCopy) {
+        listener(event);
     }
+}
 
+void InputManager::UpdateMousePosition() {
+    m_prevMousePosition = m_mousePosition;  // 현재 위치를 이전 위치로 저장
+
+    POINT screenPos;
+    GetCursorPos(&screenPos);
+    HWND terminalWindow = GetForegroundWindow();
+    RECT windowRect, clientRect;
+    GetWindowRect(terminalWindow, &windowRect);
+    GetClientRect(terminalWindow, &clientRect);
+
+    // 타이틀 바와 경계선의 높이 계산
+    int borderHeight = windowRect.bottom - windowRect.top - clientRect.bottom;
+    int titleBarHeight = GetSystemMetrics(SM_CYCAPTION);
+
+    // 윈도우 좌표로 변환 (타이틀 바와 경계선 직접 고려)
+    screenPos.x -= windowRect.left;
+    screenPos.y -= (windowRect.top + titleBarHeight);
+
+    int CONSOLE_WIDTH = 80;
+    int CONSOLE_HEIGHT = 29;
+
+    // 콘솔 좌표로 변환
+    float ratioX = static_cast<float>(screenPos.x) / clientRect.right;
+    float ratioY = static_cast<float>(screenPos.y) / clientRect.bottom;
+
+    m_mousePosition.x = static_cast<int>(ratioX * CONSOLE_WIDTH);
+    m_mousePosition.y = static_cast<int>(ratioY * CONSOLE_HEIGHT);
+
+    if (m_prevMousePosition.x != m_mousePosition.x ||
+        m_prevMousePosition.y != m_mousePosition.y) {
+        ProcessMouseEvent(MOUSE_LEFT, false);  // 마우스 이동 이벤트
+    }
+}
+
+void InputManager::AddMouseEventsToQueue() {
+    auto currentTime = std::chrono::steady_clock::now();
+
+    // 마우스 버튼 상태 업데이트
+    bool newStates[MOUSE_BUTTON_COUNT] = {
+        (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0,
+        (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0,
+        (GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0
+    };
+
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
+        m_mousePressed[i] = newStates[i];
+
+        if (m_mousePressed[i] != prevMouseState[i]) {
+            ProcessMouseEvent(static_cast<MouseButton>(i), m_mousePressed[i]);
+
+            if (m_mousePressed[i]) {  // 눌렸을 때만 큐에 추가
+                EnqueueMouseInput(i);
+                lastMouseEventTime[i] = currentTime;
+            }
+        }
+        prevMouseState[i] = m_mousePressed[i];
+    }
+}
+
+void InputManager::Update()
+{
+    UpdateMousePosition();
+    AddMouseEventsToQueue();
+    AddPressedKeysToQueue();
 }
 
 #pragma endregion
+
+
+
+
 

@@ -7,10 +7,11 @@ class MainMenuScene: public Scene {
 	constexpr static int MENU_WIDTH = 40;
 	constexpr static int MENU_HEIGHT = 30;
 
-    Button mMultiMode;
-    Button mSingleMode;
-    
+    std::unique_ptr<Button> mMultiMode;
+    std::unique_ptr<Button> mSingleMode;
+
     void InitializeButtons();
+
 public:
     MainMenuScene(
         ConsoleRenderer& renderer,
