@@ -1,3 +1,4 @@
+// Button.h
 #ifndef BUTTON_H
 #define BUTTON_H
 
@@ -16,19 +17,34 @@ public:
     virtual void draw() override;
     virtual bool contains(int mouseX, int mouseY) const override;
 
-    // InteractiveWidget 인터페이스 구현: 마우스 클릭 처리
-    virtual void OnMouseClick() override;
-
     // 텍스트 관련 메서드
-    void setText(const std::wstring& text);
+    void setText(const std::wstring& newText);
     std::wstring getText() const;
 
-    // 클릭 이벤트에 사용할 콜백 등록
-    void setOnClick(std::function<void()> callback);
+    // 이벤트 콜백 설정
+    void SetOnHoverEnter(std::function<void()> callback);
+    void SetOnHoverExit(std::function<void()> callback);
+    void SetOnMouseDown(std::function<void()> callback);
+    void SetOnMouseUp(std::function<void()> callback);
+    void SetOnClick(std::function<void()> callback);
 
 private:
+    void HandleMouseEvent(const MouseEvent& event);
+
     std::wstring text;
+    size_t mListenerIndex;  // 이벤트 리스너 인덱스 저장
+
+    // 이벤트 콜백
+    std::function<void()> onHoverEnter;
+    std::function<void()> onHoverExit;
+    std::function<void()> onMouseDown;
+    std::function<void()> onMouseUp;
     std::function<void()> onClick;
+
+    // 상태 플래그
+    bool mIsHovered;
+    bool mIsPressed;
+
 };
 
 #endif // BUTTON_H

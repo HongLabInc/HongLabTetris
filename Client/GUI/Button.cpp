@@ -1,60 +1,182 @@
+// Button.cpp
 #include "Button.h"
-#include <iostream>
-#include "../Managers/ConsoleColor.h"  // 콘솔 색상 관련 정의
-#include "../Cell.h"                   // Cell 클래스
+#include "../Managers/ConsoleColor.h"
+#include "../Cell.h"
 
 Button::Button()
     : InteractiveWidget(nullptr, nullptr)
+    , text(L"Button")
+    , mIsHovered(false)
+    , mIsPressed(false)
 {}
 
 Button::Button(InputManager* inputManager, ConsoleFrame* frame)
     : InteractiveWidget(inputManager, frame)
+    , text(L"Button")
+    , mIsHovered(false)
+    , mIsPressed(false)
+    , mListenerIndex(0)
 {
-    text = L"Button";
-    width = 6;
-    height = 3;
+    if (inputManager) {
+        mListenerIndex = inputManager->AddMouseListener(
+            [this](const MouseEvent& event) {
+            HandleMouseEvent(event);
+        }
+        );
+    }
 }
 
-Button::~Button() {}
+Button::~Button() {
+
+    if (mInputManager) {
+        mInputManager->RemoveMouseListener(mListenerIndex);
+    }
+}
 
 void Button::Update() {
-    // 상태 업데이트 (필요 시 구현)
+    if (!mInputManager || !mFrame) return;
 }
 
 void Button::draw() {
-    // 예시로 ConsoleFrame의 FillRectangle를 사용하여 버튼 배경을 그립니다.
+    if (!mFrame) return;
+
     Cell buttonCell{};
-    buttonCell.SetBackgroundColor(ConsoleColor::BrightCyan);
-    mFrame->FillRectangle(posX - width / 2, posY - height / 2, width, height, buttonCell);
+    buttonCell.SetBackgroundColor(
+        mIsPressed ? ConsoleColor::BrightBlue :
+        mIsHovered ? ConsoleColor::BrightCyan :
+                    ConsoleColor::BrightGreen
+    );
+
+    mFrame->FillRectangle(
+        posX - width,           // x 좌표를 posX로 변경
+        posY - height / 2 + (height % 2 == 0 ? 0 : 1),          // y 좌표를 posY로 변경
+        width,
+        height,
+        buttonCell
+    );
+
+
+    // 텍스트 위치 조정
+    int textX = posX + (width - static_cast<int>(text.length())) / 2 - width;
+    int textY = posY + height / 2;
+    mFrame->SetText(
+        textX,
+        textY,
+        text,
+        static_cast<WORD>(
+        mIsPressed ? ConsoleColor::White :
+        mIsHovered ? ConsoleColor::BrightYellow :
+        ConsoleColor::BrightGreen
+    )
+    );
+
+    if (mInputManager) {
+        POINT mousePos = mInputManager->GetMousePosition();
+        POINT framePos = {
+            mousePos.x - mFrame->GetX(),
+            mousePos.y - mFrame->GetY()
+        };
+        mFrame->SetText(0, 1,
+            L"Mouse: screen(" + std::to_wstring(mousePos.x) + L"," + std::to_wstring(mousePos.y) +
+            L") frame(" + std::to_wstring(framePos.x) + L"," + std::to_wstring(framePos.y) + L")",
+            static_cast<WORD>(ConsoleColor::White));
+
+        mFrame->SetText(0, 2,
+            L"Button: pos(" + std::to_wstring(posX) + L"," + std::to_wstring(posY) +
+            L") size(" + std::to_wstring(width) + L"," + std::to_wstring(height) +
+            L") hover:" + (mIsHovered ? L"Y" : L"N"),
+            static_cast<WORD>(ConsoleColor::White));
+
+        mFrame->SetText(0, 3,
+             L"Button: pos(" + std::to_wstring(posX) + L"," + std::to_wstring(posY) +
+            L") size(" + std::to_wstring(width) + L"," + std::to_wstring(height) +
+            L") pressed:" + (mIsPressed ? L"Y" : L"N"),
+            static_cast<WORD>(ConsoleColor::White));
+
+
+
+    }
 }
 
-void Button::setText(const std::wstring& text) {
-    this->text = text;
-    mFrame->SetText(posX - width / 2, posY, text, static_cast<WORD>(ConsoleColor::BrightGreen));
+
+
+bool Button::contains(int mouseX, int mouseY) const {
+    // 절대 좌표 기준으로 계산
+    return (mouseX >= posX - width &&
+            mouseX <=  posX + width &&
+            mouseY >= posY - height / 2 &&
+            mouseY <= posY + height / 2);
+}
+
+void Button::setText(const std::wstring& newText) {
+    text = newText;
 }
 
 std::wstring Button::getText() const {
     return text;
 }
 
-bool Button::contains(int mouseX, int mouseY) const {
-    // posX, posY를 버튼의 중심 좌표라고 가정하고 사각형 범위로 검사합니다.
-    Cell buttonCell{};
-    buttonCell.SetBackgroundColor(ConsoleColor::BrightYellow);
-    mFrame->FillRectangle(posX - width / 2, posY - height / 2, width, height, buttonCell);
-
-    return (mouseX >= posX - width / 2 && mouseX < posX + width / 2 &&
-            mouseY >= posY - height / 2 && mouseY < posY + height / 2);
+void Button::SetOnHoverEnter(std::function<void()> callback) {
+    onHoverEnter = callback;
 }
 
-void Button::setOnClick(std::function<void()> callback) {
+void Button::SetOnHoverExit(std::function<void()> callback) {
+    onHoverExit = callback;
+}
+
+void Button::SetOnMouseDown(std::function<void()> callback) {
+    onMouseDown = callback;
+}
+
+void Button::SetOnMouseUp(std::function<void()> callback) {
+    onMouseUp = callback;
+}
+
+void Button::SetOnClick(std::function<void()> callback) {
     onClick = callback;
 }
 
-// InteractiveWidget 인터페이스 구현
-void Button::OnMouseClick() {
-    std::cout << "Do Func" << std::endl;
-    if (onClick) {
-        onClick();
+void Button::HandleMouseEvent(const MouseEvent& event) {
+    if (!mFrame) return;
+
+    POINT framePos = {
+        event.position.x - mFrame->GetX(),
+        event.position.y - mFrame->GetY()
+    };
+
+    mFrame->SetText(0, 3,
+       L"HandleEvent: pos(" + std::to_wstring(framePos.x) + L"," + std::to_wstring(framePos.y) +
+       L") button:" + std::to_wstring(static_cast<int>(event.button)) +
+       L" pressed:" + (event.isPressed ? L"Y" : L"N"),
+       static_cast<WORD>(ConsoleColor::White));
+
+    bool isInside = contains(framePos.x, framePos.y);
+
+
+    // 호버 상태 업데이트
+    if (isInside != mIsHovered) {
+        mIsHovered = isInside;
+        if (mIsHovered && onHoverEnter) {
+            onHoverEnter();
+        } else if (!mIsHovered && onHoverExit) {
+            onHoverExit();
+        }
+    }
+
+    // 마우스 버튼 이벤트 처리
+    if (event.button == MOUSE_LEFT) {
+        if (isInside) {
+            if (event.isPressed) {
+                mIsPressed = true;
+                if (onMouseDown) onMouseDown();
+            } 
+            else if (mIsPressed) {
+                mIsPressed = false;
+                if (onMouseUp) onMouseUp();
+                if (onClick) onClick();
+            }
+        } else if (!event.isPressed) {
+            mIsPressed = false;
+        }
     }
 }

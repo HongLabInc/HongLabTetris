@@ -40,6 +40,12 @@ void SceneManager::Update()
     // 현재 Scene 업데이트
     if (mCurrentScene) {
         mCurrentScene->Update();
+
+        SceneType pendingChange = mCurrentScene->GetPendingSceneChange();
+        if (pendingChange != SceneType::None) {
+            mCurrentScene->ClearPendingSceneChange();
+            RequestSceneChange(pendingChange);
+        }
     }
 }
 

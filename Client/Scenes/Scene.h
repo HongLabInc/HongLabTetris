@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SceneType.h"
 #include "../ConsoleFrame.h"
 #include "../ConsoleRenderer.h"
 #include "../Managers/SceneManager.h"
@@ -15,6 +16,10 @@ public:
     virtual void Update() = 0;
     virtual void Draw() = 0;
 
+    SceneType GetPendingSceneChange() const;
+    
+    void ClearPendingSceneChange();
+
 protected:
     // 필요하다면 protected 생성자로 제한
     Scene(
@@ -29,4 +34,5 @@ protected:
     InputManager*      mInputManager;
     UIManager*         mUIManager;
     SceneManager*      mSceneManager;
+    SceneType          mPendingSceneChange;
 };

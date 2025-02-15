@@ -4,6 +4,7 @@
 #include <string>
 #include "../Managers/InputManager.h"
 #include "../ConsoleFrame.h"
+#include "../ConsoleRenderer.h"
 
 // Widget은 GUI 컴포넌트의 기본 클래스
 class Widget {

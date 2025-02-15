@@ -8,6 +8,15 @@ Scene::Scene(
     : mRenderer(renderer), 
     mInputManager(inputManager),
     mUIManager(uiManager),
-    mSceneManager(sceneManager) {
+    mSceneManager(sceneManager) 
+{
+    mPendingSceneChange = SceneType::None;
+}
 
+SceneType Scene::GetPendingSceneChange() const {
+    return mPendingSceneChange;
+}
+
+void Scene::ClearPendingSceneChange() {
+    mPendingSceneChange = SceneType::None;
 }

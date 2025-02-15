@@ -32,7 +32,6 @@ void UIManager::ProcessMouseEvent(const MOUSE_EVENT_RECORD & mouseEvent) {
     for (Widget* widget : mWidgets) {
         if (auto interactive = dynamic_cast<InteractiveWidget*>(widget)) {
             if (interactive->contains(mouseX, mouseY)) {
-                interactive->OnMouseClick();
                 break;  // 하나의 위젯만 처리하도록 한다면 break
             }
         }

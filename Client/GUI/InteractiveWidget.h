@@ -9,7 +9,6 @@ public:
         : Widget(inputManager, frame)
     {}
     virtual ~InteractiveWidget() = default;
-    virtual void OnMouseClick() = 0;
 };
 
 #endif

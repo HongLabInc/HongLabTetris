@@ -104,8 +104,7 @@ void Engine::Run()
 
 void Engine::ProcessInput()
 {
-	inputManager->AddPressedKeysToQueue();
-	inputManager->AddMouseEventsToQueue();
+	inputManager->Update();
 }
 
 void Engine::Update(float deltaTime)
