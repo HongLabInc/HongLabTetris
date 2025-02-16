@@ -105,6 +105,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Common\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +122,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Common\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,10 +133,50 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Common.h" />
+    <ClInclude Include="Command\ACommandStandardDoubleString.h" />
+    <ClInclude Include="Command\ACommandStandardMessage.h" />
+    <ClInclude Include="Command\ACommandStandardSignal.h" />
+    <ClInclude Include="Command\ACommandStandardNumericData.h" />
+    <ClInclude Include="Command\ACommandStandardStringList.h" />
+    <ClInclude Include="Command\Authentication\C2S_RequestLogin.h" />
+    <ClInclude Include="Command\Chat\C2S_SendChatMessage.h" />
+    <ClInclude Include="Command\Chat\S2C_SendChatMessage.h" />
+    <ClInclude Include="Command\Lobby\C2S_RequestLobbyInfo.h" />
+    <ClInclude Include="Command\Lobby\S2C_NotifyLobbyEntry.h" />
+    <ClInclude Include="Command\Connection\C2S_RequestLogout.h" />
+    <ClInclude Include="Command\Connection\S2C_DisconnectUser.h" />
+    <ClInclude Include="Command\Lobby\S2C_SendLobbyInfo.h" />
+    <ClInclude Include="Command\Lobby\S2C_SendLobbyUserList.h" />
+    <ClInclude Include="Hub\GameRoom.h" />
+    <ClInclude Include="Hub\Lobby.h" />
+    <ClInclude Include="Hub\TicketBooth.h" />
+    <ClInclude Include="Translation.h" />
+    <ClInclude Include="Command\Authentication\S2C_Welcome.h" />
+    <ClInclude Include="Command\Commands.h" />
+    <ClInclude Include="Command\ICommand.h" />
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Protocol\Endian.h" />
+    <ClInclude Include="Hub\Hub.h" />
+    <ClInclude Include="Protocol\SerDes.h" />
+    <ClInclude Include="Protocol\Packet.h" />
+    <ClInclude Include="User\Session.h" />
+    <ClInclude Include="User\User.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Command\ACommandStandardDoubleString.cpp" />
+    <ClCompile Include="Command\ACommandStandardMessage.cpp" />
+    <ClCompile Include="Command\ACommandStandardSignal.cpp" />
+    <ClCompile Include="Command\ACommandStandardNumericData.cpp" />
+    <ClCompile Include="Command\ACommandStandardStringList.cpp" />
+    <ClCompile Include="Command\Lobby\C2S_RequestLobbyInfo.cpp" />
+    <ClCompile Include="Hub\GameRoom.cpp" />
+    <ClCompile Include="Hub\Hub.cpp" />
+    <ClCompile Include="Hub\Lobby.cpp" />
+    <ClCompile Include="Hub\TicketBooth.cpp" />
+    <ClCompile Include="Protocol\SerDes.cpp" />
+    <ClCompile Include="Protocol\Packet.cpp" />
+    <ClCompile Include="User\Session.cpp" />
+    <ClCompile Include="User\User.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

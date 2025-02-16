@@ -1,40 +1,156 @@
-#include "Server.h"
 #include <iostream>
-#include <string>
-#include <locale>
-#include <windows.h>
+#include <thread>
+#include <vector>
+#include <boost/asio.hpp>
+#include <exception>
+#include <set>
+#include "Server.h"
+#include "Constants.h"
 
-int main() {
-    // 콘솔 문자 인코딩 UTF‑8 설정
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-    std::wcout.imbue(std::locale("ko_KR.UTF-8"));
+namespace
+{
+	void runServer(void);
+	void printSystemInfo(void);
+	void setPort(unsigned short& port);
+}
 
-    // Server 인스턴스 생성 (shared_ptr를 사용하여 lifetime 관리)
-    auto server = std::make_shared<Server>();
+int main()
+{
+	try
+	{
+		runServer();
+	}
+	catch (const std::exception& ex)
+	{
+		std::cerr << "Fatal exception in main: " << ex.what() << std::endl;
+		return 1;
+	}
 
-    // 메시지 수신 콜백 등록: 수신한 메시지를 출력하고, 모든 클라이언트에 브로드캐스트합니다.
-    server->SetMessageReceivedCallback(
-        [server](const std::string& message, boost::asio::ip::tcp::socket* senderSocket) {
-        std::cout << "Accept Message: " << message << std::endl;
-        // 받은 메시지를 모든 클라이언트에게 브로드캐스트합니다.
-        server->Broadcast(message);
-    }
-    );
+	return 0;
+}
 
-    unsigned short port = 12345; // 서버가 사용할 포트 번호
-    if (!server->InitializeAsServer(port)) {
-        std::cerr << "faile Initialize Server ." << std::endl;
-        return EXIT_FAILURE;
-    }
 
-    std::wcout << L"Server Port: " << port
-        << L" is proceeding. Press Enter to quit." << std::endl;
-    std::wcin.get();
 
-    // 서버 정리 및 종료
-    server->Stop();
-    std::wcout << L"Server is closed" << std::endl;
 
-    return EXIT_SUCCESS;
+
+namespace
+{
+	void runServer(void)
+	{
+		printSystemInfo();
+
+		unsigned short port = Constants::DEFAULT_PORT;
+		setPort(port);
+
+		std::vector<std::thread> threads;
+		unsigned int threadCount = std::thread::hardware_concurrency();
+		if (threadCount == 0)
+		{
+			threadCount = Constants::DEFAULT_THREAD_NUMBER;
+		}
+		threads.reserve(threadCount);
+
+		boost::asio::io_context io;
+		Server server(io, port);
+
+		auto worker =
+			[&io, &server]()
+			{
+				try
+				{
+					io.run();
+				}
+				catch (const std::exception& e)
+				{
+					std::cerr << "Worker thread exception: " << e.what() << std::endl;
+					server.ShutDownServerForced();
+				}
+			};
+
+		for (unsigned int i = 0; i < threadCount; ++i)
+		{
+			threads.emplace_back(worker);
+		}
+
+		for (auto& t : threads)
+		{
+			if (t.joinable())
+			{
+				t.join();
+			}
+		}
+
+		if (server.IsForcedShutdownRequested() == false)
+		{
+		std::cout << "Server shutdown gracefully.\n";
+		}
+	}
+
+	void printSystemInfo(void)
+	{
+		unsigned int coreCount = std::thread::hardware_concurrency();
+		std::cout << "Logical CPU cores: " << coreCount << std::endl;
+
+		std::string hostName = boost::asio::ip::host_name();
+		std::cout << "Host Name: " << hostName << std::endl;
+
+		boost::asio::io_context io;
+		boost::asio::ip::tcp::resolver resolver(io);
+		boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(hostName, "");
+
+		std::set<std::string> ipv4Addresses;
+		std::set<std::string> ipv6Addresses;
+
+		for (const auto& entry : endpoints)
+		{
+			boost::asio::ip::address addr = entry.endpoint().address();
+			if (addr.is_v4())
+			{
+				ipv4Addresses.insert(addr.to_string());
+			}
+			else if (addr.is_v6())
+			{
+				ipv6Addresses.insert(addr.to_string());
+			}
+		}
+
+		std::cout << "IPv4 Addresses:" << std::endl;
+		for (const auto& ip : ipv4Addresses)
+		{
+			std::cout << "  " << ip << std::endl;
+		}
+
+		std::cout << "IPv6 Addresses:" << std::endl;
+		for (const auto& ip : ipv6Addresses)
+		{
+			std::cout << "  " << ip << std::endl;
+		}
+		std::cout << std::endl;
+	}
+
+	void setPort(unsigned short& port)
+	{
+		std::cout << "Enter port number (default " << port << "): ";
+		std::string input;
+		std::getline(std::cin, input);
+		if (!input.empty())
+		{
+			try
+			{
+				int p = std::stoi(input);
+				if (p > 0 && p <= 65535)
+				{
+					port = static_cast<unsigned short>(p);
+				}
+				else
+				{
+					std::cout << "Invalid port number. Using default " << port << ".\n";
+				}
+			}
+			catch (...)
+			{
+				std::cout << "Invalid input. Using default port " << port << ".\n";
+			}
+		}
+	}
 }
