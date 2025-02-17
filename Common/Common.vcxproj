@@ -102,11 +102,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_AMD64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Common\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Libs\Server\;$(ProjectDir)\Libs\Console\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/wd4819 /source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,11 +120,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_AMD64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Common\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Libs\Server\;$(ProjectDir)\Libs\Console\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/wd4819 /source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,50 +135,68 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Command\ACommandStandardDoubleString.h" />
-    <ClInclude Include="Command\ACommandStandardMessage.h" />
-    <ClInclude Include="Command\ACommandStandardSignal.h" />
-    <ClInclude Include="Command\ACommandStandardNumericData.h" />
-    <ClInclude Include="Command\ACommandStandardStringList.h" />
-    <ClInclude Include="Command\Authentication\C2S_RequestLogin.h" />
-    <ClInclude Include="Command\Chat\C2S_SendChatMessage.h" />
-    <ClInclude Include="Command\Chat\S2C_SendChatMessage.h" />
-    <ClInclude Include="Command\Lobby\C2S_RequestLobbyInfo.h" />
-    <ClInclude Include="Command\Lobby\S2C_NotifyLobbyEntry.h" />
-    <ClInclude Include="Command\Connection\C2S_RequestLogout.h" />
-    <ClInclude Include="Command\Connection\S2C_DisconnectUser.h" />
-    <ClInclude Include="Command\Lobby\S2C_SendLobbyInfo.h" />
-    <ClInclude Include="Command\Lobby\S2C_SendLobbyUserList.h" />
-    <ClInclude Include="Hub\GameRoom.h" />
-    <ClInclude Include="Hub\Lobby.h" />
-    <ClInclude Include="Hub\TicketBooth.h" />
-    <ClInclude Include="Translation.h" />
-    <ClInclude Include="Command\Authentication\S2C_Welcome.h" />
-    <ClInclude Include="Command\Commands.h" />
-    <ClInclude Include="Command\ICommand.h" />
-    <ClInclude Include="Constants.h" />
-    <ClInclude Include="Protocol\Endian.h" />
-    <ClInclude Include="Hub\Hub.h" />
-    <ClInclude Include="Protocol\SerDes.h" />
-    <ClInclude Include="Protocol\Packet.h" />
-    <ClInclude Include="User\Session.h" />
-    <ClInclude Include="User\User.h" />
+    <ClInclude Include="Libs\Server\Command\ACommandStandardDoubleString.h" />
+    <ClInclude Include="Libs\Server\Command\ACommandStandardMessage.h" />
+    <ClInclude Include="Libs\Server\Command\ACommandStandardSignal.h" />
+    <ClInclude Include="Libs\Server\Command\ACommandStandardNumericData.h" />
+    <ClInclude Include="Libs\Server\Command\ACommandStandardStringList.h" />
+    <ClInclude Include="Libs\Server\Command\Authentication\C2S_RequestLogin.h" />
+    <ClInclude Include="Libs\Server\Command\Chat\C2S_SendChatMessage.h" />
+    <ClInclude Include="Libs\Server\Command\Chat\S2C_SendChatMessage.h" />
+    <ClInclude Include="Libs\Server\Command\Lobby\C2S_RequestLobbyInfo.h" />
+    <ClInclude Include="Libs\Server\Command\Lobby\S2C_NotifyLobbyEntry.h" />
+    <ClInclude Include="Libs\Server\Command\Connection\Common_NotifyDisconnect.h" />
+    <ClInclude Include="Libs\Server\Command\Lobby\S2C_SendLobbyInfo.h" />
+    <ClInclude Include="Libs\Server\Command\Lobby\S2C_SendLobbyUserList.h" />
+    <ClInclude Include="Libs\Console\Console.h" />
+    <ClInclude Include="Libs\Console\ConsoleTypes.h" />
+    <ClInclude Include="Libs\Console\ConsoleUnix.h" />
+    <ClInclude Include="Libs\Console\ConsoleWin32.h" />
+    <ClInclude Include="Libs\Console\Panel\Panel.h" />
+    <ClInclude Include="Libs\Server\Hub\ClientHub.h" />
+    <ClInclude Include="Libs\Console\Consoles.h" />
+    <ClInclude Include="Libs\Server\Hub\GameRoom.h" />
+    <ClInclude Include="Libs\Server\Hub\Lobby.h" />
+    <ClInclude Include="Libs\Server\Hub\TicketBooth.h" />
+    <ClInclude Include="Libs\Server\Hub\ILocalCommandExecutor.h" />
+    <ClInclude Include="Libs\Server\Translation.h" />
+    <ClInclude Include="Libs\Server\Command\Authentication\S2C_Welcome.h" />
+    <ClInclude Include="Libs\Server\Command\Commands.h" />
+    <ClInclude Include="Libs\Server\Command\ICommand.h" />
+    <ClInclude Include="Libs\Server\Constants.h" />
+    <ClInclude Include="Libs\Server\Protocol\Endian.h" />
+    <ClInclude Include="Libs\Server\Hub\Hub.h" />
+    <ClInclude Include="Libs\Server\Protocol\SerDes.h" />
+    <ClInclude Include="Libs\Server\Protocol\Packet.h" />
+    <ClInclude Include="Libs\Server\User\Session.h" />
+    <ClInclude Include="Libs\Server\User\User.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Command\ACommandStandardDoubleString.cpp" />
-    <ClCompile Include="Command\ACommandStandardMessage.cpp" />
-    <ClCompile Include="Command\ACommandStandardSignal.cpp" />
-    <ClCompile Include="Command\ACommandStandardNumericData.cpp" />
-    <ClCompile Include="Command\ACommandStandardStringList.cpp" />
-    <ClCompile Include="Command\Lobby\C2S_RequestLobbyInfo.cpp" />
-    <ClCompile Include="Hub\GameRoom.cpp" />
-    <ClCompile Include="Hub\Hub.cpp" />
-    <ClCompile Include="Hub\Lobby.cpp" />
-    <ClCompile Include="Hub\TicketBooth.cpp" />
-    <ClCompile Include="Protocol\SerDes.cpp" />
-    <ClCompile Include="Protocol\Packet.cpp" />
-    <ClCompile Include="User\Session.cpp" />
-    <ClCompile Include="User\User.cpp" />
+    <ClCompile Include="Libs\Server\Command\ACommandStandardDoubleString.cpp" />
+    <ClCompile Include="Libs\Server\Command\ACommandStandardMessage.cpp" />
+    <ClCompile Include="Libs\Server\Command\ACommandStandardSignal.cpp" />
+    <ClCompile Include="Libs\Server\Command\ACommandStandardNumericData.cpp" />
+    <ClCompile Include="Libs\Server\Command\ACommandStandardStringList.cpp" />
+    <ClCompile Include="Libs\Server\Command\Lobby\C2S_RequestLobbyInfo.cpp" />
+    <ClCompile Include="Libs\Console\Console.cpp" />
+    <ClCompile Include="Libs\Console\ConsoleUnix.cpp" />
+    <ClCompile Include="Libs\Console\ConsoleWin32.cpp" />
+    <ClCompile Include="Libs\Console\Panel\Panel.cpp" />
+    <ClCompile Include="Libs\Server\Hub\ClientHub.cpp" />
+    <ClCompile Include="Libs\Server\Hub\GameRoom.cpp" />
+    <ClCompile Include="Libs\Server\Hub\Hub.cpp" />
+    <ClCompile Include="Libs\Server\Hub\Lobby.cpp" />
+    <ClCompile Include="Libs\Server\Hub\TicketBooth.cpp" />
+    <ClCompile Include="Libs\Server\Protocol\SerDes.cpp" />
+    <ClCompile Include="Libs\Server\Protocol\Packet.cpp" />
+    <ClCompile Include="Libs\Server\User\Session.cpp" />
+    <ClCompile Include="Libs\Server\User\User.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Libs\Console\README.md">
+      <SubType>
+      </SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

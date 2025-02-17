@@ -1,11 +1,9 @@
 root = true
 
-[*.{c++,cc,cl,cpp,cppm,cu,cuh,cxx,glsl,h,h++,hh,hpp,hxx,inl,ipp,ixx,shdbg,tlh,tli}]
-
 [*]
 charset = utf-8
 
-[*.{c++,cc,cpp,cppm,cxx,h,h++,hh,hpp,hxx,inl,ipp,ixx,tlh,tli}]
+[*.{c++,cc,cl,cpp,cppm,cu,cuh,cxx,glsl,h,h++,hh,hpp,hxx,inl,ipp,ixx,shdbg,tlh,tli}]
 
 # Visual C++ Code Style settings
 
@@ -17,10 +15,10 @@ cpp_indent_braces = false
 cpp_indent_multi_line_relative_to = innermost_parenthesis
 cpp_indent_within_parentheses = align_to_parenthesis
 cpp_indent_preserve_within_parentheses = true
-cpp_indent_case_contents = ture
-cpp_indent_case_labels = ture
+cpp_indent_case_contents = true
+cpp_indent_case_labels = true
 cpp_indent_case_contents_when_block = false
-cpp_indent_lambda_braces_when_parameter = ture
+cpp_indent_lambda_braces_when_parameter = true
 cpp_indent_goto_labels = leftmost_column
 cpp_indent_preprocessor = leftmost_column
 cpp_indent_access_specifiers = false

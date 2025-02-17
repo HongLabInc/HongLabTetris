@@ -15,133 +15,172 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constants.h">
+    <ClInclude Include="Libs\Server\Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Protocol\Packet.h">
+    <ClInclude Include="Libs\Server\Protocol\Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Protocol\SerDes.h">
+    <ClInclude Include="Libs\Server\Protocol\SerDes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Protocol\Endian.h">
+    <ClInclude Include="Libs\Server\Protocol\Endian.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\ICommand.h">
+    <ClInclude Include="Libs\Server\Command\ICommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\ACommandStandardMessage.h">
+    <ClInclude Include="Libs\Server\Command\ACommandStandardMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Commands.h">
+    <ClInclude Include="Libs\Server\Command\Commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\ACommandStandardSignal.h">
+    <ClInclude Include="Libs\Server\Command\ACommandStandardSignal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\ACommandStandardDoubleString.h">
+    <ClInclude Include="Libs\Server\Command\ACommandStandardDoubleString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\ACommandStandardNumericData.h">
+    <ClInclude Include="Libs\Server\Command\ACommandStandardNumericData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\ACommandStandardStringList.h">
+    <ClInclude Include="Libs\Server\Command\ACommandStandardStringList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Authentication\S2C_Welcome.h">
+    <ClInclude Include="Libs\Server\Command\Authentication\S2C_Welcome.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Translation.h">
+    <ClInclude Include="Libs\Server\Translation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Authentication\C2S_RequestLogin.h">
+    <ClInclude Include="Libs\Server\Command\Authentication\C2S_RequestLogin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hub\Hub.h">
+    <ClInclude Include="Libs\Server\Hub\Hub.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="User\Session.h">
+    <ClInclude Include="Libs\Server\User\Session.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="User\User.h">
+    <ClInclude Include="Libs\Server\User\User.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hub\TicketBooth.h">
+    <ClInclude Include="Libs\Server\Hub\TicketBooth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hub\Lobby.h">
+    <ClInclude Include="Libs\Server\Hub\Lobby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hub\GameRoom.h">
+    <ClInclude Include="Libs\Server\Hub\GameRoom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Connection\S2C_DisconnectUser.h">
+    <ClInclude Include="Libs\Server\Command\Connection\Common_NotifyDisconnect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Connection\C2S_RequestLogout.h">
+    <ClInclude Include="Libs\Server\Command\Lobby\S2C_NotifyLobbyEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Lobby\S2C_NotifyLobbyEntry.h">
+    <ClInclude Include="Libs\Server\Command\Lobby\C2S_RequestLobbyInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Lobby\C2S_RequestLobbyInfo.h">
+    <ClInclude Include="Libs\Server\Command\Lobby\S2C_SendLobbyInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Lobby\S2C_SendLobbyInfo.h">
+    <ClInclude Include="Libs\Server\Command\Lobby\S2C_SendLobbyUserList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Lobby\S2C_SendLobbyUserList.h">
+    <ClInclude Include="Libs\Server\Command\Chat\C2S_SendChatMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Chat\C2S_SendChatMessage.h">
+    <ClInclude Include="Libs\Server\Command\Chat\S2C_SendChatMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command\Chat\S2C_SendChatMessage.h">
+    <ClInclude Include="Libs\Server\Hub\ClientHub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Server\Hub\ILocalCommandExecutor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Console\Console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Console\ConsoleUnix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Console\ConsoleWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Console\Panel\Panel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Console\ConsoleTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Console\Consoles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Protocol\Packet.cpp">
+    <ClCompile Include="Libs\Server\Protocol\Packet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Protocol\SerDes.cpp">
+    <ClCompile Include="Libs\Server\Protocol\SerDes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command\ACommandStandardMessage.cpp">
+    <ClCompile Include="Libs\Server\Command\ACommandStandardMessage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command\ACommandStandardSignal.cpp">
+    <ClCompile Include="Libs\Server\Command\ACommandStandardSignal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command\ACommandStandardDoubleString.cpp">
+    <ClCompile Include="Libs\Server\Command\ACommandStandardDoubleString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command\ACommandStandardNumericData.cpp">
+    <ClCompile Include="Libs\Server\Command\ACommandStandardNumericData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command\ACommandStandardStringList.cpp">
+    <ClCompile Include="Libs\Server\Command\ACommandStandardStringList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hub\Hub.cpp">
+    <ClCompile Include="Libs\Server\Hub\Hub.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="User\Session.cpp">
+    <ClCompile Include="Libs\Server\User\Session.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="User\User.cpp">
+    <ClCompile Include="Libs\Server\User\User.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hub\TicketBooth.cpp">
+    <ClCompile Include="Libs\Server\Hub\TicketBooth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hub\Lobby.cpp">
+    <ClCompile Include="Libs\Server\Hub\Lobby.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hub\GameRoom.cpp">
+    <ClCompile Include="Libs\Server\Hub\GameRoom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command\Lobby\C2S_RequestLobbyInfo.cpp">
+    <ClCompile Include="Libs\Server\Command\Lobby\C2S_RequestLobbyInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Libs\Server\Hub\ClientHub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Libs\Console\Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Libs\Console\ConsoleUnix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Libs\Console\ConsoleWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Libs\Console\Panel\Panel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Libs\Console\README.md" />
   </ItemGroup>
 </Project>
