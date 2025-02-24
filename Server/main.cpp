@@ -5,13 +5,15 @@
 #include <exception>
 #include <set>
 #include "Server.h"
-#include "Constants.h"
+#include "ServerConstants.h"
 
 namespace
 {
 	void runServer(void);
 	void printSystemInfo(void);
 	void setPort(unsigned short& port);
+	void runThreads(std::vector<std::jthread>& threads,
+					boost::asio::io_context& io, Server& server);
 }
 
 int main()
@@ -29,55 +31,24 @@ int main()
 	return 0;
 }
 
-
-
-
-
 namespace
 {
 	void runServer(void)
 	{
 		printSystemInfo();
 
-		unsigned short port = Constants::DEFAULT_PORT;
+		unsigned short port = constants::DEFAULT_PORT;
 		setPort(port);
 
-		std::vector<std::thread> threads;
-		unsigned int threadCount = std::thread::hardware_concurrency();
-		if (threadCount == 0)
-		{
-			threadCount = Constants::DEFAULT_THREAD_NUMBER;
-		}
-		threads.reserve(threadCount);
-
 		boost::asio::io_context io;
-		Server server(io, port);
+		auto workGuard = boost::asio::make_work_guard(io);
 
-		auto worker =
-			[&io, &server]()
-			{
-				try
-				{
-					io.run();
-				}
-				catch (const std::exception& e)
-				{
-					std::cerr << "Worker thread exception: " << e.what() << std::endl;
-					server.ShutDownServerForced();
-				}
-			};
+		Server server(io, port, workGuard);
 
-		for (unsigned int i = 0; i < threadCount; ++i)
+
 		{
-			threads.emplace_back(worker);
-		}
-
-		for (auto& t : threads)
-		{
-			if (t.joinable())
-			{
-				t.join();
-			}
+			std::vector<std::jthread> threads;
+			runThreads(threads, io, server);
 		}
 
 		if (server.IsForcedShutdownRequested() == false)
@@ -151,6 +122,35 @@ namespace
 			{
 				std::cout << "Invalid input. Using default port " << port << ".\n";
 			}
+		}
+	}
+
+	void runThreads(std::vector<std::jthread>& threads, boost::asio::io_context& io, Server& server)
+	{
+		unsigned int threadCount = std::thread::hardware_concurrency();
+		if (threadCount == 0)
+		{
+			threadCount = constants::DEFAULT_THREAD_NUMBER;
+		}
+		threads.reserve(threadCount);
+
+		auto worker =
+			[&io, &server]()
+			{
+				try
+				{
+					io.run();
+				}
+				catch (const std::exception& e)
+				{
+					std::cerr << "Worker thread exception: " << e.what() << std::endl;
+					server.ShutDownServerForced();
+				}
+			};
+
+		for (unsigned int i = 0; i < threadCount; ++i)
+		{
+			threads.emplace_back(worker);
 		}
 	}
 }

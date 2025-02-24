@@ -8,7 +8,8 @@
 class Server
 {
 public:
-	explicit Server(boost::asio::io_context& io, unsigned short port);
+	using WorkGuard = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
+	explicit Server(boost::asio::io_context& io, unsigned short port, WorkGuard& workGuard);
 	~Server() = default;
 
 	void ShutDownServer();
@@ -17,6 +18,7 @@ public:
 
 private:
 	std::atomic<bool> mForcedShutdownRequested = false;
+	WorkGuard mWorkGuard;
 	boost::asio::io_context& mIO;
 	std::shared_ptr<TicketBooth> mTicketBooth;
 };
