@@ -37,7 +37,7 @@ void ConsoleRenderer::Clear()
     }
     mFrames.clear();
 
-    assert(mMainFrame != nullptr);
+	assert(mMainFrame != nullptr && "MainFrame is nullptr");
     mMainFrame->Clear();
 }
 
@@ -79,8 +79,8 @@ void ConsoleRenderer::RemoveFrame(ConsoleFrame* frame)
 
 void ConsoleRenderer::SetBuffer(int row, int column, CHAR_INFO charInfo)
 {
-    assert(0 <= row && row < mHeight);
-    assert(0 <= column && column < mActualWidth);
+	assert(0 <= row && row < mHeight && "row is out of range");
+	assert(0 <= column && column < mActualWidth && "column is out of range");
 
     mBuffer[row * mActualWidth + column] = charInfo;
 }
@@ -115,7 +115,7 @@ void ConsoleRenderer::RenderFrame(ConsoleFrame* frame)
 
 void ConsoleRenderer::Render()
 {
-    assert(mMainFrame != nullptr);
+	assert(mMainFrame != nullptr && "MainFrame is nullptr");
     RenderFrame(mMainFrame);
 
     for (const auto& frame : mFrames)

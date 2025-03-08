@@ -1,7 +1,6 @@
 #define NOMINMAX
 #include <cassert>
 #include <algorithm>
-#include <execution>
 #include "Panel.h"
 
 Panel::Panel(std::size_t top, std::size_t left,
@@ -98,15 +97,13 @@ void Panel::PrintAt(std::size_t row, std::size_t column,
     const std::size_t printSize = std::min(text.size(), emptySpace);
 
     std::transform
-	(std::execution::unseq,
-     text.begin(), text.begin() + printSize, mBuffer.begin() + startPosition,
+	(text.begin(), text.begin() + printSize, mBuffer.begin() + startPosition,
 	 [fgColor, bgColor](wchar_t character) -> Cell
 	 {
          return {character, fgColor, bgColor};
 	 });
 	std::fill(mDirtyCells.begin() + startPosition,
-              mDirtyCells.begin() + startPosition + printSize,
-              true);
+			  mDirtyCells.begin() + startPosition + printSize, true);
 }
 
 void Panel::PrintLines(std::size_t row, std::wstring_view text,
@@ -116,48 +113,40 @@ void Panel::PrintLines(std::size_t row, std::wstring_view text,
         return;
 
     const std::size_t startPosition = row * mWidth;
-    const std::size_t printSize = std::min(mBuffer.size() - row * mWidth, text.size());
+	const std::size_t printSize = std::min(mBuffer.size() - row * mWidth,
+                                           text.size());
 
 	std::transform
-	(std::execution::unseq,
-	 text.begin(), text.begin() + printSize, mBuffer.begin() + startPosition,
+	(text.begin(), text.begin() + printSize, mBuffer.begin() + startPosition,
 	 [fgColor, bgColor](wchar_t character) -> Cell
 	 {
 		 return {character, fgColor, bgColor};
 	 });
 	std::fill(mDirtyCells.begin() + startPosition,
-              mDirtyCells.begin() + startPosition + printSize,
-              true);
+			  mDirtyCells.begin() + startPosition + printSize, true);
 }
 
 void Panel::ClearLines(std::size_t startRow, std::size_t numLines)
 {
     if (startRow >= mHeight)
-        return;
+		return;
 
-    const std::size_t printNumLines = std::min(numLines, mHeight - startRow);
-    const std::size_t printSize = printNumLines * mWidth;
+	const std::size_t printNumLines = std::min(numLines, mHeight - startRow);
+	const std::size_t printSize = printNumLines * mWidth;
 
-	{
-		auto startPosition = mBuffer.begin() + startRow * mWidth;
-		std::fill(startPosition, startPosition + printSize, console::DefaultCell);
-	}
+	auto bufferStart = mBuffer.begin() + startRow * mWidth;
+	std::fill(bufferStart, bufferStart + printSize, console::DefaultCell);
 
-	{
-		auto startPosition = mDirtyCells.begin() + startRow * mWidth;
-		std::fill(startPosition, startPosition + printSize, true);
-	}
+	auto dirtyFlagsStart = mDirtyCells.begin() + startRow * mWidth;
+	std::fill(dirtyFlagsStart, dirtyFlagsStart + printSize, true);
 }
 
 void Panel::SetBackground(Color bgColor)
 {
-	std::for_each
-    (std::execution::unseq,
-     mBuffer.begin(), mBuffer.end(),
-	 [bgColor](Cell& cell)
-     {
+	for (auto& cell : mBuffer)
+	{
 		cell.bgColor = bgColor;
-     });
+	}
     std::fill(mDirtyCells.begin(), mDirtyCells.end(), true);
 }
 
@@ -173,7 +162,7 @@ void Panel::Scroll(std::size_t numLines)
     auto middle = mBuffer.begin() + numLines * mWidth;
     auto last = mBuffer.end();
 
-    std::fill(std::move(middle, last, first), mBuffer.end(), console::DefaultCell);
+	std::fill(std::move(middle, last, first), mBuffer.end(), console::DefaultCell);
     std::fill(mDirtyCells.begin(), mDirtyCells.end(), true);
 }
 
@@ -186,8 +175,7 @@ void Panel::AppendLines(std::wstring_view text, Color fgColor, Color bgColor)
 
     Scroll(numLines);
     std::transform
-    (std::execution::unseq,
-     text.begin(), text.begin() + printSize, startPosition,
+    (text.begin(), text.begin() + printSize, startPosition,
      [fgColor, bgColor](wchar_t character) -> Cell
      {
          return {character, fgColor, bgColor};
@@ -201,14 +189,11 @@ void Panel::FillRectangle(Rect rect, const Cell& cell)
 
 	for (std::size_t row = 0; row < numFillRows; ++row)
 	{
-		{
-			auto startPosition = mBuffer.begin() + (rect.top + row) * mWidth + rect.left;
-			std::fill(startPosition, startPosition + numFillColumns, cell);
-		}
-		{
-			auto startPosition = mDirtyCells.begin() + (rect.top + row) * mWidth + rect.left;
-			std::fill(startPosition, startPosition + numFillColumns, true);
-		}
+		auto bufferStart = mBuffer.begin() + (rect.top + row) * mWidth + rect.left;
+		std::fill(bufferStart, bufferStart + numFillColumns, cell);
+
+		auto dirtyFlagsStart = mDirtyCells.begin() + (rect.top + row) * mWidth + rect.left;
+		std::fill(dirtyFlagsStart, dirtyFlagsStart + numFillColumns, true);
 	}
 }
 
@@ -225,20 +210,17 @@ void Panel::DrawRectangle(Rect rect, const Cell& cell)
     if (numFillRows == 0 || numFillColumns == 0)
     {
         return;
-    }
+	}
 
-    {
-		auto startPosition = mBuffer.begin() + rect.top * mWidth + rect.left;
-		std::fill(startPosition, startPosition + numFillColumns, cell); //위
-		startPosition = mBuffer.begin() + (rect.top + numFillRows - 1) * mWidth + rect.left;
-		std::fill(startPosition, startPosition + numFillColumns, cell); //아래
-    }
-    {
-		auto startPosition = mDirtyCells.begin() + rect.top * mWidth + rect.left;
-		std::fill(startPosition, startPosition + numFillColumns, true); //위
-		startPosition = mDirtyCells.begin() + (rect.top + numFillRows - 1) * mWidth + rect.left;
-		std::fill(startPosition, startPosition + numFillColumns, true); //아래
-    }
+	auto bufferStart = mBuffer.begin() + rect.top * mWidth + rect.left;
+	std::fill(bufferStart, bufferStart + numFillColumns, cell); //위
+	bufferStart = mBuffer.begin() + (rect.top + numFillRows - 1) * mWidth + rect.left;
+	std::fill(bufferStart, bufferStart + numFillColumns, cell); //아래
+
+	auto dirtyFlagsStart = mDirtyCells.begin() + rect.top * mWidth + rect.left;
+	std::fill(dirtyFlagsStart, dirtyFlagsStart + numFillColumns, true); //위
+	dirtyFlagsStart = mDirtyCells.begin() + (rect.top + numFillRows - 1) * mWidth + rect.left;
+	std::fill(dirtyFlagsStart, dirtyFlagsStart + numFillColumns, true); //아래
 
     if (numFillRows <= 2)
     {

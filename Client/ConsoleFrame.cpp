@@ -19,8 +19,8 @@ void ConsoleFrame::Clear()
 
 const Cell& ConsoleFrame::GetCell(int x, int y) const
 {
-    assert(0 <= x && x < mWidth);
-    assert(0 <= y && y < mHeight);
+	assert(0 <= x && x < mWidth && "x is out of range");
+	assert(0 <= y && y < mHeight && "y is out of range");
 
     return mCells[y * mWidth + x];
 }

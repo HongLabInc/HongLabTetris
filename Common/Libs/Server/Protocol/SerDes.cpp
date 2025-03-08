@@ -13,10 +13,10 @@ void SerDes::ParsePacket(const Packet& packet)
 		return;
 	}
 
-	assert(packetBody.size() >= sizeof(uint16_t));
+	assert(packetBody.size() >= sizeof(uint16_t) && "Packet body is too small");
 	uint16_t id;
 	std::memcpy(&id, packetBody.data(), sizeof(uint16_t));
-	id = Endian::SwapBytes(id);
+	id = endian::SwapBytes(id);
 
 	if (id >= NUM_TYPE_ENUMS)
 	{
@@ -24,7 +24,7 @@ void SerDes::ParsePacket(const Packet& packet)
 		return;
 	}
 
-	assert(packetBody.begin() + sizeof(uint16_t) <= packetBody.end());
+	assert(packetBody.begin() + sizeof(uint16_t) <= packetBody.end() && "Packet body is too small");
 	mPacketBody.assign(packetBody.begin() + sizeof(uint16_t), packetBody.end());
 	mTypeID = id;
 	mParsed = true;
@@ -37,7 +37,7 @@ bool SerDes::IsSuccessful() const
 
 std::shared_ptr<ICommand> SerDes::DeserializePacket() const
 {
-	assert(mTypeID < NUM_TYPE_ENUMS);
+	assert(mTypeID < NUM_TYPE_ENUMS && "Invalid type ID");
 	std::shared_ptr<ICommand> output = Command::GetCommand(mTypeID);
 	output->Init(mPacketBody);
 
@@ -46,7 +46,7 @@ std::shared_ptr<ICommand> SerDes::DeserializePacket() const
 
 std::vector<uint8_t> SerDes::SerializeCommand(const ICommand& command)
 {
-	uint16_t id = Endian::SwapBytes(static_cast<uint16_t>(command.GetType()));
+	uint16_t id = endian::SwapBytes(static_cast<uint16_t>(command.GetType()));
 
 	std::vector<uint8_t> body = command.Serialize();
 	std::vector<uint8_t> output(sizeof(uint16_t) + body.size());

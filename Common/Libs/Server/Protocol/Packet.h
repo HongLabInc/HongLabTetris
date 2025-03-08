@@ -4,6 +4,9 @@
 #include <vector>
 #include "Constants.h"
 
+// TODO
+// 빌드하는 컴파일러, 환경별로 패킷 패딩에 의한 차이가 발생 가능
+// 헤더 사이즈를 고정 크기로 처리하도록 개선 필요
 struct PacketHeader
 {
     uint32_t magic;     // 클라이언트가 실제로 보낸 메시지가 length보다 길 경우 다음 메시지에서 필터링

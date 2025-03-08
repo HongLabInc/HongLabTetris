@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Libs\Server\Command\ACommandAdaptorIntString.h" />
     <ClInclude Include="Libs\Server\Command\ACommandStandardDoubleString.h" />
     <ClInclude Include="Libs\Server\Command\ACommandStandardMessage.h" />
     <ClInclude Include="Libs\Server\Command\ACommandStandardSignal.h" />
@@ -156,9 +157,9 @@
     <ClInclude Include="Libs\Server\Hub\ClientHub.h" />
     <ClInclude Include="Libs\Console\Consoles.h" />
     <ClInclude Include="Libs\Server\Hub\GameRoom.h" />
+    <ClInclude Include="Libs\Server\Hub\IManager.h" />
     <ClInclude Include="Libs\Server\Hub\Lobby.h" />
     <ClInclude Include="Libs\Server\Hub\TicketBooth.h" />
-    <ClInclude Include="Libs\Server\Hub\ILocalCommandExecutor.h" />
     <ClInclude Include="Libs\Server\Translation.h" />
     <ClInclude Include="Libs\Server\Command\Authentication\S2C_Welcome.h" />
     <ClInclude Include="Libs\Server\Command\Commands.h" />

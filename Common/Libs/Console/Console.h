@@ -16,6 +16,7 @@
 #include <vector>
 #include <memory>
 #include <span>
+#include <mutex>
 #include "ConsoleTypes.h"
 
 class Panel;
@@ -30,6 +31,8 @@ public:
 	Console(std::size_t height, std::size_t width);
 	virtual ~Console() = default;
 
+	void Init();
+
 	std::shared_ptr<Panel> AddPanel(std::size_t top, std::size_t left,
 									std::size_t height, std::size_t width);
 
@@ -37,7 +40,7 @@ public:
 
 	void WriteRegion(Rect rect, const std::vector<Cell>& buffer,
 					 std::vector<uint8_t>& dirtyFlags);
-	void Refresh();
+	void Refresh();//thread-safe
 	void Clear();
 
 	void RefreshWithDirtyMap(); // DEBUG용
@@ -48,6 +51,7 @@ protected:
 	std::vector<Cell> mBuffer;
 	std::vector<uint8_t> mDirtyCells; //bool 대신 uint8_t 사용
 	std::vector<std::shared_ptr<Panel> > mPanels;
+	std::mutex mMutex;
 
 	// 아래부터 플랫폼별 별도 구현을 해야하는 low-level 함수들입니다.
 public:
@@ -63,6 +67,11 @@ public:
 	void WriteColoredString(std::string_view text, Color color,
 							Color backGroundColor = Color::Black);
 	void PrintDebugDirtyMap();
+
+	std::mutex& GetMutex();
+
+	std::size_t GetHeight() const;
+	std::size_t GetWidth() const;
 
 private:
 #ifdef _WIN32

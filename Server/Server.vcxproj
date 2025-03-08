@@ -141,8 +141,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Server.h" />
-    <ClInclude Include="ServerConstants.h" />
-    <ClInclude Include="ServerTranslation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

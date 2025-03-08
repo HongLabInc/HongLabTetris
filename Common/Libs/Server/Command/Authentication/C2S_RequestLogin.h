@@ -15,9 +15,9 @@ namespace c2s
 	class RequestLogin final: public ACommandStandardMessage
 	{
 	public:
-		RequestLogin(const std::wstring& name)
+		RequestLogin(std::string_view name)
 		{
-			mMessage = boost::locale::conv::from_utf(name, "UTF-8");
+			mMessage = name;
 		}
 
 		RequestLogin() = default;
@@ -31,12 +31,13 @@ namespace c2s
 				TicketBooth& booth = static_cast<TicketBooth&>(hub);
 				std::shared_ptr<Lobby> lobby = booth.GetLobby();
 
-				assert(hub.IsJoinable() == true);
+				assert(hub.IsJoinable() == true && "Hub is not joinable");
 				// 현재는 무조건 접속을 승인
 				if (hub.IsJoinable() == false)
 				{
 					booth.SendCommandToUser(requestUserID,
-					 common::NotifyDisconnect(translation::KEY_SERVER_UNAVAILABLE));
+					 common::NotifyDisconnect(
+						 translation::WLiteralToStr(translation::KEY_SERVER_UNAVAILABLE)));
 					return;
 				}
 

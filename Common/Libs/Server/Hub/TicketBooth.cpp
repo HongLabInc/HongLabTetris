@@ -38,22 +38,27 @@ void TicketBooth::StartAccept()
 	mAcceptor.async_accept
 	(socket, boost::asio::bind_executor
 	(mStrand,
-	 [this, user](boost::system::error_code error)
+	 [this, user = std::move(user)](boost::system::error_code error) mutable
 	 {
-		 if (!error)
-		 {
-			 mUsers.emplace(mNextUserID, std::move(user));
-			 mUsers[mNextUserID++]->SessionStart();
-			 boost::asio::dispatch
-			 (mStrand,
-			  [this, user]()
-			  {
-				  user->SendCommandToSession(
-					  s2c::Welcome(translation::KEY_WELCOME_MESSAGE));
-			  });
-		 }
-		 StartAccept();
+		 acceptConnection(user, error);
 	 }));
+}
+
+void TicketBooth::acceptConnection(std::shared_ptr<User>& user, boost::system::error_code error)
+{
+	if (!error)
+	{
+		mUsers.emplace(mNextUserID, user);
+		mUsers[mNextUserID++]->SessionStart();
+		boost::asio::dispatch
+		(mStrand,
+		 [this, user = std::move(user)]()
+		 {
+			 user->SendCommandToSession(s2c::Welcome(
+				 translation::WLiteralToStr(translation::SERVER_WELCOME_MESSAGE)));
+		 });
+	}
+	StartAccept();
 }
 
 void TicketBooth::AddUserEvent(uint32_t userID)
@@ -81,7 +86,7 @@ void TicketBooth::RequestCompletionHandler(bool canMove, uint32_t userID)
 	if (canMove == false)
 	{
 		mUsers[userID]->SendCommandToSession(
-			common::NotifyDisconnect(translation::KEY_SERVER_UNAVAILABLE));
+			common::NotifyDisconnect(translation::WLiteralToStr(translation::KEY_SERVER_UNAVAILABLE)));
 		RemoveUser(userID);
 	}
 }

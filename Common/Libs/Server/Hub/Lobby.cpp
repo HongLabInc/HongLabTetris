@@ -4,10 +4,13 @@
 #include "User/User.h"
 #include "User/Session.h"
 #include "Command/Commands.h"
+#include "Translation.h"
 
 Lobby::Lobby(uint32_t id, boost::asio::io_context& io,
 			 std::size_t roomSize)
 	: Hub(id, io, roomSize)
+	, mTitle(translation::WLiteralToStr(translation::SERVER_LOBBY_TITLE))
+	, mNotice(translation::WLiteralToStr(translation::SERVER_LOBBY_NOTICE))
 {
 }
 

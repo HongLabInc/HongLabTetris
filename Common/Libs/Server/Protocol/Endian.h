@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <bit>
 
-namespace Endian
+namespace endian
 {
 	constexpr uint16_t SwapBytes(uint16_t value)
 	{

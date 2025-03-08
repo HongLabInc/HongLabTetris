@@ -10,7 +10,7 @@ void ACommandStandardDoubleString::Init(const std::vector<uint8_t>& packetBody)
 		return;
 	}
 	uint16_t secondStart = *reinterpret_cast<const uint16_t*>(packetBody.data());
-	secondStart = Endian::SwapBytes(secondStart);
+	secondStart = endian::SwapBytes(secondStart);
 
 	if (packetBody.size() < secondStart)
 	{
@@ -38,9 +38,9 @@ std::vector<uint8_t> ACommandStandardDoubleString::Serialize() const
 								MAX_DATA_BODY_LENGTH);
 	std::vector<uint8_t> output(size);
 
-	assert(size <= MAX_DATA_BODY_LENGTH);
+	assert(size <= MAX_DATA_BODY_LENGTH && "Data body size is too big");
 
-	uint16_t header = Endian::SwapBytes(secondStart);
+	uint16_t header = endian::SwapBytes(secondStart);
 
 	std::memcpy(output.data(), &header, sizeof(header));
 	std::memcpy(output.data() + sizeof(header), mFirst.data(),

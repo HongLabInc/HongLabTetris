@@ -7,7 +7,7 @@ void ACommandStandardStringList::Init(const std::vector<uint8_t>& packetBody)
 {
 	constexpr std::size_t elemSize = constants::STRING_BLOCK_SIZE;
 
-	assert(packetBody.size() <= MAX_DATA_BODY_LENGTH);
+	assert(packetBody.size() <= MAX_DATA_BODY_LENGTH && "Data body size is too big");
 	std::size_t size = packetBody.size();
 	if (size % elemSize != 0) // size가 0인 경우도 허용
 	{
@@ -18,7 +18,7 @@ void ACommandStandardStringList::Init(const std::vector<uint8_t>& packetBody)
 	
 	mData.resize(size);
 
-	assert(packetBody.size() == size * elemSize);
+	assert(packetBody.size() == size * elemSize && "Data body size is not multiple of elemSize");
 	std::memcpy(mData.data(), packetBody.data(), packetBody.size());
 }
 
@@ -32,7 +32,7 @@ std::vector<uint8_t> ACommandStandardStringList::Serialize() const
 	constexpr std::size_t elemSize = constants::STRING_BLOCK_SIZE;
 
 	std::size_t size = std::min(mData.size() * elemSize, MAX_DATA_BODY_LENGTH);
-	assert(size <= MAX_DATA_BODY_LENGTH);
+	assert(size <= MAX_DATA_BODY_LENGTH && "Data body size is too big");
 
 	size /= elemSize;
 

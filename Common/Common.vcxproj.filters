@@ -99,9 +99,6 @@
     <ClInclude Include="Libs\Server\Hub\ClientHub.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Libs\Server\Hub\ILocalCommandExecutor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Libs\Console\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -118,6 +115,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Libs\Console\Consoles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Server\Command\ACommandAdaptorIntString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Server\Hub\IManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
