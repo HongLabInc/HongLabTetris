@@ -36,6 +36,8 @@ public:
 	virtual void AcceptCompletionHandler(bool canAccept, uint32_t userID) final;
 
 private:
+	void acceptConnection(std::shared_ptr<User>& user, boost::system::error_code error);
+
 	Server& mServer;
 	boost::asio::ip::tcp::acceptor mAcceptor;
 	uint32_t mNextUserID = 1; // TODO: ID가 오버플로우 되는 경우 고려하기

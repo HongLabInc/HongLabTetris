@@ -7,7 +7,7 @@ void ACommandStandardNumericData::Init(const std::vector<uint8_t>& packetBody)
 {
 	constexpr std::size_t elemSize = sizeof(uint32_t) / sizeof(uint8_t);
 
-	assert(packetBody.size() <= MAX_DATA_BODY_LENGTH);
+	assert(packetBody.size() <= MAX_DATA_BODY_LENGTH && "Data body size is too big");
 	std::size_t size = packetBody.size();
 	if (size == 0 || size % elemSize != 0)
 	{
@@ -23,7 +23,7 @@ void ACommandStandardNumericData::Init(const std::vector<uint8_t>& packetBody)
 	(std::execution::unseq, mData.begin(), mData.end(), mData.begin(),
 	 [](Number32 num) -> Number32
 	 {
-		 num.Int32 = Endian::SwapBytes(num.Int32);
+		 num.Int32 = endian::SwapBytes(num.Int32);
 		 return num;
 	 });
 }
@@ -39,7 +39,7 @@ std::vector<uint8_t> ACommandStandardNumericData::Serialize() const
 
 	std::size_t size = std::min(mData.size() * elemSize, MAX_DATA_BODY_LENGTH);
 
-	assert(size <= MAX_DATA_BODY_LENGTH);
+	assert(size <= MAX_DATA_BODY_LENGTH && "Data body size is too big");
 
 	size /= elemSize;
 
@@ -48,7 +48,7 @@ std::vector<uint8_t> ACommandStandardNumericData::Serialize() const
 	(std::execution::unseq, swap.begin(), swap.begin() + size, swap.begin(),
 	 [](Number32 num) -> Number32
 	 {
-		 num.Int32 = Endian::SwapBytes(num.Int32);
+		 num.Int32 = endian::SwapBytes(num.Int32);
 		 return num;
 	 });
 

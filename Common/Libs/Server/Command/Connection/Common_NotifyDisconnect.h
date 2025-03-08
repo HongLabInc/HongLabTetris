@@ -12,7 +12,7 @@ namespace common
     public:
         NotifyDisconnect(std::string_view message)
         {
-            mMessage = translation::translate(message);
+			mMessage = message;
         }
 
         NotifyDisconnect() = default;

@@ -27,7 +27,7 @@ namespace Command
 
 	inline std::shared_ptr<ICommand> GetCommand(uint16_t typeID)
 	{
-		assert(typeID < NUM_TYPE_ENUMS);
+		assert(typeID < NUM_TYPE_ENUMS && "Invalid typeID");
 		switch (typeID)
 		{
 			case toInt(Type::C2S_RequestLogin):
@@ -45,11 +45,11 @@ namespace Command
 			case toInt(Type::S2C_NotifyLobbyEntry):
 				return std::make_shared<s2c::NotifyLobbyEntry>();
 			case toInt(Type::S2C_SendLobbyInfo):
-				return std::make_shared<s2c::NotifyLobbyEntry>();
+				return std::make_shared<s2c::SendLobbyInfo>();
 			case toInt(Type::S2C_SendLobbyUserList):
-				return std::make_shared<s2c::NotifyLobbyEntry>();
+				return std::make_shared<s2c::SendLobbyUserList>();
 			default:
-				assert(false);
+				assert(false && "Invalid typeID");
 				return nullptr;
 		}
 	}

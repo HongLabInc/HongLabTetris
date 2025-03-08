@@ -2,7 +2,6 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
-#include <execution>
 #include <Windows.h>
 #include <locale>
 #include <cassert>
@@ -37,15 +36,15 @@ void Console::PrintDirtyBuffer()
 	std::vector<CHAR_INFO> buffer(bufferSize);
 
 	std::transform
-	(std::execution::unseq, mBuffer.begin(), mBuffer.end(), buffer.begin(),
+	(mBuffer.begin(), mBuffer.end(), buffer.begin(),
 	 [this](const Cell& cell) -> CHAR_INFO
-	{
-		CHAR_INFO charInfo{};
+	 {
+		 CHAR_INFO charInfo{};
 
-		charInfo.Char.UnicodeChar = cell.character;
-		charInfo.Attributes = toColor32(cell.fgColor) | toBackgroundColor32(cell.bgColor);
-		return charInfo;
-	});
+		 charInfo.Char.UnicodeChar = cell.character;
+		 charInfo.Attributes = toColor32(cell.fgColor) | toBackgroundColor32(cell.bgColor);
+		 return charInfo;
+	 });
 
 	// DirtyCell로 꽉찬 줄이 연속으로 있는 경우 모아서 블록으로 한번에 출력
 	// [blockStartRow, blockEndRow) 범위를 출력
@@ -74,7 +73,7 @@ void Console::PrintDirtyBuffer()
 bool Console::isRowFullyDirty(std::vector<uint8_t>::iterator rowBegin)
 {
 	[[maybe_unused]] const std::size_t index = rowBegin - mDirtyCells.begin();
-	assert((index % mWidth) == 0);
+	assert((index % mWidth) == 0 && "rowBegin is not aligned to row start");
 
 	return (std::find(rowBegin, rowBegin + mWidth, false) == rowBegin + mWidth);
 }
@@ -247,13 +246,13 @@ void Console::PrintDebugDirtyMap()
 	MoveCursor(printRow, 0);
 	std::vector<char> buffer(mWidth);
 
-	assert(mDirtyCells.size() % mWidth == 0);
+	assert(mDirtyCells.size() % mWidth == 0 && "DirtyCells size mismatch");
 	for (auto startIter = mDirtyCells.begin(); startIter < mDirtyCells.end();
 		 startIter += mWidth)
 	{
 		auto endIter = startIter + mWidth;
 		std::transform
-		(std::execution::unseq, startIter, endIter, buffer.begin(),
+		(startIter, endIter, buffer.begin(),
 		 [](uint8_t isDirty) -> wchar_t
 		 {
 			 return (isDirty ? 'T' : 'F');
@@ -270,7 +269,7 @@ void Console::PrintDebugDirtyMap()
 	{
 		auto endIter = startIter + mWidth;
 		std::transform
-		(std::execution::unseq, startIter, endIter, wBuffer.begin(),
+		(startIter, endIter, wBuffer.begin(),
 		 [](Cell cell) -> wchar_t
 		 {
 			 return cell.character;
@@ -282,6 +281,11 @@ void Console::PrintDebugDirtyMap()
 		MoveCursor(++printRow, 0);
 	}
 	MoveCursor(0, 0);
+}
+
+std::mutex& Console::GetMutex()
+{
+	return mMutex;
 }
 
 namespace

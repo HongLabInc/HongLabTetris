@@ -12,6 +12,7 @@ Session::Session(std::shared_ptr<User> user, boost::asio::io_context& io)
 	, mStrand(boost::asio::make_strand(io))
 {
 	mReadBuffer.reserve(constants::TCP_PROTOCOL_INITIAL_READ_BUFFER_SIZE);
+	mWriteBuffer.reserve(constants::TCP_PROTOCOL_INITIAL_READ_BUFFER_SIZE);
 }
 
 Session::~Session()
@@ -33,9 +34,9 @@ void Session::Send(const ICommand& command)
 {
 	auto self(shared_from_this());
 
-	std::vector<uint8_t> data = SerDes::SerializeCommand(command);
+	mWriteBuffer = Packet::Serialize(SerDes::SerializeCommand(command));
 
-	boost::asio::async_write(mSocket, boost::asio::buffer(data), boost::asio::bind_executor
+	boost::asio::async_write(mSocket, boost::asio::buffer(mWriteBuffer), boost::asio::bind_executor
 	(mStrand,
 	 [this, self = std::move(self)](const boost::system::error_code& error, std::size_t bytes)
 	 {
@@ -55,30 +56,35 @@ void Session::readHeader()
 
 	boost::asio::async_read(mSocket, boost::asio::buffer(mReadBuffer), boost::asio::bind_executor
 	(mStrand,
-	 [this, self = std::move(self)](const boost::system::error_code& error, std::size_t bytes)
+	 [this, self = std::move(self)](const boost::system::error_code& error, std::size_t bytes) mutable
 	 {
-		 assert(bytes == HEADER_SIZE);
-		 if (error)
-		 {
-			 return requestDisconnect();
-		 }
-
-		 mPacket.Reset();
-		 if (mPacket.ParseHeader(mReadBuffer.data()) == false)
-		 {
-			 return requestDisconnect();
-		 }
-
-		 readBody(std::move(self));
+		 readPacketHead(bytes, error, self);
 	 }
 	));
+}
+
+void Session::readPacketHead(size_t bytes, const boost::system::error_code& error, std::shared_ptr<Session>& self)
+{
+	if (error)
+	{
+		return requestDisconnect();
+	}
+	assert(bytes == HEADER_SIZE && "Header size is not correct");
+
+	mPacket.Reset();
+	if (mPacket.ParseHeader(mReadBuffer.data()) == false)
+	{
+		return requestDisconnect();
+	}
+
+	readBody(std::move(self));
 }
 
 void Session::readBody(std::shared_ptr<Session> self)
 {
 	const PacketHeader& header = mPacket.GetHeader();
 
-	assert(header.packetTotalLength >= HEADER_SIZE);
+	assert(header.packetTotalLength >= HEADER_SIZE && "Packet size is not correct");
 	const std::size_t bodySize = header.packetTotalLength - HEADER_SIZE;
 	mReadBuffer.resize(bodySize);
 
@@ -86,31 +92,37 @@ void Session::readBody(std::shared_ptr<Session> self)
 	(mStrand,
 	 [this, self = std::move(self), bodySize](const boost::system::error_code& error, std::size_t bytes)
 	 {
-		 if (error)
-		 {
-			 return requestDisconnect();
-		 }
-
-		 if (mPacket.ParseBody(mReadBuffer.data(), bodySize) == false)
-		 {
-			 return requestDisconnect();
-		 }
-
-		 SerDes packetSerializer;
-		 packetSerializer.ParsePacket(mPacket);
-		 if (packetSerializer.IsSuccessful() == false)
-		 {
-			 return requestDisconnect();
-		 }
-
-		 if (std::shared_ptr<User> user = mUser.lock())
-		 {
-			 user->RequestAddEvent(packetSerializer.DeserializePacket());
-		 }
-
-		 readHeader();
+		 readPacketBody(error, bodySize);
 	 }
 	));
+}
+
+void Session::readPacketBody(const boost::system::error_code& error, const size_t bodySize)
+{
+	if (error)
+	{
+		std::cerr << "Error reading body: " << error.message() << std::endl;
+		return requestDisconnect();
+	}
+
+	if (mPacket.ParseBody(mReadBuffer.data(), bodySize) == false)
+	{
+		return requestDisconnect();
+	}
+
+	SerDes packetSerializer;
+	packetSerializer.ParsePacket(mPacket);
+	if (packetSerializer.IsSuccessful() == false)
+	{
+		return requestDisconnect();
+	}
+
+	if (std::shared_ptr<User> user = mUser.lock())
+	{
+		user->RequestAddEvent(packetSerializer.DeserializePacket());
+	}
+
+	readHeader();
 }
 
 void Session::closeSession()
@@ -123,7 +135,8 @@ void Session::closeSession()
 
 void Session::requestDisconnect()
 {
-	Send(common::NotifyDisconnect(translation::KEY_CONNECTION_TERMINATED));
+	Send(common::NotifyDisconnect(
+		translation::WLiteralToStr(translation::KEY_CONNECTION_TERMINATED)));
 	closeSession();
 }
 

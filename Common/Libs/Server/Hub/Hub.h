@@ -5,7 +5,6 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <string_view>
-#include "ILocalCommandExecutor.h"
 
 class Server;
 class User;
@@ -58,4 +57,12 @@ protected:
 	Users mUsers;
 	boost::asio::io_context& mIO;
 	Strand mStrand;
+
+private:
+	void replyRequest(std::shared_ptr<Hub>& targetHub, uint32_t userID,
+					  Hub::Strand& targetStrand, std::shared_ptr<Hub>& self);
+	void sendUser(uint32_t userID, std::shared_ptr<Hub>& targetHub, Strand& targetStrand,
+				  std::shared_ptr<Hub>& self);
+	void receiveUser(uint32_t userID, std::shared_ptr<Hub>& targetHub,
+					 std::shared_ptr<User>& user);
 };

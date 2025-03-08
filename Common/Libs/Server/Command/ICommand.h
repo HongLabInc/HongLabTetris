@@ -9,7 +9,7 @@
 
 class Hub;
 
-class ICommand
+class ICommand: public std::enable_shared_from_this<ICommand>
 {
 public:
 	enum class eCommandType: uint16_t
