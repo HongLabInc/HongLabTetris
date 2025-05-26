@@ -185,5 +185,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Libs\Console\README.md" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
