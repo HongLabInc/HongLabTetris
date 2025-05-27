@@ -1,0 +1,8 @@
+{
+    "name": "ssundong010-test",
+    "version": "0.0.1",
+    "dependencies": [
+        "boost-asio",
+        "boost-locale"
+    ]
+  }
