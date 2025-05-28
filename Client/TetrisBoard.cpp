@@ -121,13 +121,20 @@ void TetrisBoard::HandleInput()
 		if (key == VK_LEFT) mCurrentBlock->MoveLeft();
 		else if (key == VK_RIGHT) mCurrentBlock->MoveRight();
 		else if (key == VK_UP) mCurrentBlock->Rotate();
-		else if (key == VK_DOWN) {
-			while (!CheckCollision(mCurrentBlock)) {
-				mCurrentBlock->UpdatePos();
-				mCurrentBlock->MoveDown();
-			}
-           mIsBlockReadyToLock = true;
-		}
+		else if (key == VK_SPACE) {
+            while (!CheckCollision(mCurrentBlock)) {
+                mCurrentBlock->UpdatePos();
+                mCurrentBlock->MoveDown();
+            }
+            mIsBlockReadyToLock = true;
+        }
+        else if (key == VK_DOWN) {
+            mIsSoftDropping = true;
+        }
+	}
+	
+	if (!mInputManager->IsKeyPressed(VK_DOWN)) {
+		mIsSoftDropping = false;
 	}
 
 	if (CheckCollision(mCurrentBlock))
@@ -138,6 +145,8 @@ void TetrisBoard::HandleInput()
 
 void TetrisBoard::MoveBlockDown()
 {
+	int currentInterval = mIsSoftDropping ? mSoftDropInterval : mUpdateInterval;
+	
 	if (mIsBlockReadyToLock || mFramesUntilUpdate <= 0)
 	{
 		// Update Basic Move
@@ -152,7 +161,7 @@ void TetrisBoard::MoveBlockDown()
 			mIsBlockActive = false;
             mIsBlockReadyToLock = false;
 		}
-		mFramesUntilUpdate = mUpdateInterval;
+		mFramesUntilUpdate = currentInterval;
 	} else
 	{
 		--mFramesUntilUpdate;

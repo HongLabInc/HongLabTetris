@@ -43,6 +43,7 @@ private:
     static constexpr int mFirstInputDelayFrames = 8;
     static constexpr int mContinuousInputDelayFrames = 24;
     static constexpr int mQueueFrameSize = 8;
+    static constexpr int mSoftDropInterval = 5; // 100 / 20, 20배속
 
     static const std::array<int, 100> scoreTable;
 
@@ -58,6 +59,7 @@ private:
 
     bool mIsBlockActive = false;
     bool mIsBlockReadyToLock = false;
+    bool mIsSoftDropping = false;
 
     ConsoleRenderer& mRenderer;
     ConsoleFrame* mFrame;

@@ -30,7 +30,7 @@ void InputManager::AddPressedKeysToQueue() {
     using clock = std::chrono::steady_clock;
     auto now = clock::now();
 
-    int keysToCheck[] = {VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN, VK_RETURN};
+    int keysToCheck[] = {VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN, VK_RETURN, VK_SPACE};
 
     for(int key : keysToCheck) {
         if(IsKeyPressed(key)) {
