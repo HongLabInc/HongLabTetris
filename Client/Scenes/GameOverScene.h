@@ -14,7 +14,7 @@ public:
         UIManager* um,
         SceneManager* sm);
 
-    void Update() override;
+    void Update(float deltaTime) override;
 
     void Draw() override;
 

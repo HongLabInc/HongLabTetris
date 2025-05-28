@@ -13,7 +13,7 @@ public:
         SceneManager* sm, 
         GameModeType mode);
 
-    void Update() override;
+    void Update(float deltaTime) override;
 
     void Draw() override;
 

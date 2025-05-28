@@ -16,10 +16,10 @@ PlayingScene::PlayingScene(
     }
 }
 
-void PlayingScene::Update() {
+void PlayingScene::Update(float deltaTime) {
     // 보드 업데이트
     for (auto& board : mBoards) {
-        board->Update();
+        board->Update(deltaTime);
         if (board->IsFull()) {
             // Game Over
             mSceneManager->RequestSceneChange(SceneType::GameOver);
