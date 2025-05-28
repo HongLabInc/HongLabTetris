@@ -145,10 +145,10 @@ void TetrisBoard::HandleInput()
 
 void TetrisBoard::MoveBlockDown(float deltaTime)
 {
-	float currentInterval = mIsSoftDropping ? mSoftDropInterval : mDefaultInterval;
+	float currentInterval = mIsSoftDropping ? mSoftDropIntervalSeconds : mDropIntervalSeconds;
 	
-	mTimeUntilUpdate += deltaTime;
-	if (mIsBlockReadyToLock || mTimeUntilUpdate >= currentInterval)
+	mTimeUntilDropSeconds += deltaTime;
+	if (mIsBlockReadyToLock || mTimeUntilDropSeconds >= currentInterval)
 	{
 		// Update Basic Move
 		mCurrentBlock->UpdatePos();
@@ -162,7 +162,7 @@ void TetrisBoard::MoveBlockDown(float deltaTime)
 			mIsBlockActive = false;
             mIsBlockReadyToLock = false;
 		}
-		mTimeUntilUpdate = 0.0f;
+		mTimeUntilDropSeconds = 0.0f;
 	}
 }
 
