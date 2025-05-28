@@ -13,7 +13,7 @@ GameOverScene::GameOverScene(
 	mFrame = renderer.AddFrame(0, 0, 40, 30);
 }
 
-void GameOverScene::Update()
+void GameOverScene::Update(float deltaTime)
 {
 	mFrame->Clear();
 	mFrame->SetText(5, posY, L"Game Over", static_cast<WORD>(ConsoleColor::BrightRed));

@@ -67,7 +67,7 @@ void TetrisBoard::InitBoard(int x,int y,int width,int height) {
     }
 }
 
-void TetrisBoard::Update()
+void TetrisBoard::Update(float deltaTime)
 {
     if (mIsBlockActive == false)
     {
@@ -76,7 +76,7 @@ void TetrisBoard::Update()
    
     HandleInput();
 
-    MoveBlockDown();
+    MoveBlockDown(deltaTime);
 
     if (mIsBlockActive == false)
     {
@@ -143,11 +143,12 @@ void TetrisBoard::HandleInput()
 	UpdateGhostBlock();
 }
 
-void TetrisBoard::MoveBlockDown()
+void TetrisBoard::MoveBlockDown(float deltaTime)
 {
-	int currentInterval = mIsSoftDropping ? mSoftDropInterval : mUpdateInterval;
+	float currentInterval = mIsSoftDropping ? mSoftDropIntervalSeconds : mDropIntervalSeconds;
 	
-	if (mIsBlockReadyToLock || mFramesUntilUpdate <= 0)
+	mTimeUntilDropSeconds += deltaTime;
+	if (mIsBlockReadyToLock || mTimeUntilDropSeconds >= currentInterval)
 	{
 		// Update Basic Move
 		mCurrentBlock->UpdatePos();
@@ -161,10 +162,7 @@ void TetrisBoard::MoveBlockDown()
 			mIsBlockActive = false;
             mIsBlockReadyToLock = false;
 		}
-		mFramesUntilUpdate = currentInterval;
-	} else
-	{
-		--mFramesUntilUpdate;
+		mTimeUntilDropSeconds = 0.0f;
 	}
 }
 

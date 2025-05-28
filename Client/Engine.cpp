@@ -109,7 +109,7 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	sceneManager->Update();
+	sceneManager->Update(deltaTime);
 
 	//Sleep(500);
 }

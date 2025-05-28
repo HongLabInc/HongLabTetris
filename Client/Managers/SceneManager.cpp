@@ -35,11 +35,11 @@ void SceneManager::RequestSceneChange(SceneType type)
     }
 }
 
-void SceneManager::Update()
+void SceneManager::Update(float deltaTime)
 {
     // 현재 Scene 업데이트
     if (mCurrentScene) {
-        mCurrentScene->Update();
+        mCurrentScene->Update(deltaTime);
 
         SceneType pendingChange = mCurrentScene->GetPendingSceneChange();
         if (pendingChange != SceneType::None) {

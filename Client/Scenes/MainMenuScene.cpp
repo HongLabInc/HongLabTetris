@@ -66,7 +66,7 @@ MainMenuScene::MainMenuScene(
     mFrame->SetText(5, 6, L"Press Enter to Start", static_cast<WORD>(ConsoleColor::BrightWhite));
 }
 
-void MainMenuScene::Update() {
+void MainMenuScene::Update(float deltaTime) {
 
     // Enter 키 입력 처리
     int key = mInputManager->DequeueInput();

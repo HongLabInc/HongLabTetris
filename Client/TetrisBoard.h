@@ -15,9 +15,9 @@ public:
     ~TetrisBoard();
 
     void InitBoard(int x,int y,int width,int height);
-    void Update();
+    void Update(float deltaTime);
     void HandleInput();
-    void MoveBlockDown();
+    void MoveBlockDown(float deltaTime);
     void UpdateGhostBlock();
     void Draw();
 
@@ -39,11 +39,12 @@ private:
     void MoveLines();
     static std::array<int, 100> generateScoreTable();
 
-    static constexpr int mUpdateInterval = 100;
+    static constexpr float mDropIntervalSeconds = 0.1f;
+    static constexpr float mSoftDropIntervalSeconds = mDropIntervalSeconds / 20;
+
     static constexpr int mFirstInputDelayFrames = 8;
     static constexpr int mContinuousInputDelayFrames = 24;
     static constexpr int mQueueFrameSize = 8;
-    static constexpr int mSoftDropInterval = 5; // 100 / 20, 20배속
 
     static const std::array<int, 100> scoreTable;
 
@@ -52,7 +53,8 @@ private:
 
     int mFirstInputFramesLeft = 0;
     int mContinuousInputFramesLeft = 0;
-    int mFramesUntilUpdate = 0;
+
+    float mTimeUntilDropSeconds = 0.0f;
 
     int mScore = 0;
     int mCombo = 0;

@@ -23,7 +23,7 @@ public:
     void RequestSceneChange(SceneType type);
 
     // 현재 Scene 업데이트/렌더링
-    void Update();
+    void Update(float deltaTime);
     void Draw();
 
 private:
