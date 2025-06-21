@@ -14,9 +14,9 @@ typedef enum {
 } ShapeType;
 typedef enum {
 	ROTATION_0,
-	ROTATION_90,
-	ROTATION_180,
-	ROTATION_270,
+	ROTATION_1,
+	ROTATION_2,
+	ROTATION_3,
 } RotationState;
 
 typedef char mat2x2[2][2];
@@ -33,7 +33,37 @@ typedef union {
 	const mat4x4* mat4;
 } ModelPointer;
 
-
 extern ModelPointer modelPointers[SHAPE_COUNT][ROTATION_COUNT];
 
 void InitializeModelPointers();
+
+//////////////////////////////
+/// Super Rotation System
+/// See: https://github.com/HongLabInc/HongLabTetris/issues/62
+//////////////////////////////
+
+constexpr int NumOfKickTest = 5;
+
+struct KickOffset
+{
+	int x, y;
+};
+
+struct SRSKickData {
+	KickOffset kicks[NumOfKickTest];
+};
+
+enum RotationTransition {
+	TRANS_0_TO_1,
+	TRANS_1_TO_0,
+	TRANS_1_TO_2,
+	TRANS_2_TO_1,
+	TRANS_2_TO_3,
+	TRANS_3_TO_2,
+	TRANS_3_TO_0,
+	TRANS_0_TO_3,
+	TRANS_COUNT
+};
+
+extern const SRSKickData SRS_KICK_DATA_JLSTZ[TRANS_COUNT];
+extern const SRSKickData SRS_KICK_DATA_I[TRANS_COUNT];

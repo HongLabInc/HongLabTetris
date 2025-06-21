@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include <algorithm>
 #include <string>
+#include "ModelPointer.h"
 #include "TetrisBoard.h"
 #include "Managers/ConsoleColor.h"
 
@@ -91,9 +92,9 @@ void TetrisBoard::Instantiate()
 	mThirdBlock = std::make_unique<Block>(2, 2, colorManager->GetRandomColor());
     mThirdBlock->Initalize();
 
-	mCurrentBlock->SetX(mWidth / 2 - 2);
+    mCurrentBlock->SetX(mWidth / 2 - 2);
 
-	mGhostBlock = std::make_unique<Block>(mWidth / 2 - 2, 0, ConsoleColor::Black);
+	mGhostBlock = std::make_unique<Block>(mCurrentBlock->GetX(), 0, ConsoleColor::Black);
 	mGhostBlock->CopyFrom(*mCurrentBlock);
 	mGhostBlock->SetTexture(ConsoleColor::Cyan);
     
@@ -120,7 +121,9 @@ void TetrisBoard::HandleInput()
 	if (key != -1) {
 		if (key == VK_LEFT) mCurrentBlock->MoveLeft();
 		else if (key == VK_RIGHT) mCurrentBlock->MoveRight();
-		else if (key == VK_UP) mCurrentBlock->Rotate();
+		else if (key == VK_UP) {
+            TryRotateWithWallKick(true);
+		}
 		else if (key == VK_SPACE) {
             while (!CheckCollision(mCurrentBlock)) {
                 mCurrentBlock->UpdatePos();
@@ -175,7 +178,7 @@ bool TetrisBoard::CheckCollision(std::unique_ptr<Block>& block)
     for(int i = 0; i < size; ++i) {
         for(int j = 0; j < size; ++j) {
             
-            if(mCurrentBlock->GetValue(i, j) != 0) {
+            if(block->GetValue(i, j) != 0) {
                 int boardX = worldX + j;
                 int boardY = worldY + i;
 
@@ -418,4 +421,67 @@ std::array<int, 100> TetrisBoard::generateScoreTable()
     }
 
     return table;
+}
+
+bool TetrisBoard::TryRotateWithWallKick(bool clockwise)
+{
+    if (mCurrentBlock == nullptr) return false;
+    
+    ShapeType pieceType = mCurrentBlock->GetType();
+    RotationState currentRotation = mCurrentBlock->GetRotation();
+    RotationState nextRotation = mCurrentBlock->GetNextRotation(clockwise);
+    
+    if (pieceType == SHAPE_O) {
+        // O블록은 회전 사용 X
+        return true;
+    }
+    
+    int originalX = mCurrentBlock->GetX();
+    int originalY = mCurrentBlock->GetY();
+    
+    RotationTransition transition;
+    if (currentRotation == ROTATION_0 && nextRotation == ROTATION_1) {
+        transition = TRANS_0_TO_1;
+    } else if (currentRotation == ROTATION_1 && nextRotation == ROTATION_0) {
+        transition = TRANS_1_TO_0;
+    } else if (currentRotation == ROTATION_1 && nextRotation == ROTATION_2) {
+        transition = TRANS_1_TO_2;
+    } else if (currentRotation == ROTATION_2 && nextRotation == ROTATION_1) {
+        transition = TRANS_2_TO_1;
+    } else if (currentRotation == ROTATION_2 && nextRotation == ROTATION_3) {
+        transition = TRANS_2_TO_3;
+    } else if (currentRotation == ROTATION_3 && nextRotation == ROTATION_2) {
+        transition = TRANS_3_TO_2;
+    } else if (currentRotation == ROTATION_3 && nextRotation == ROTATION_0) {
+        transition = TRANS_3_TO_0;
+    } else { // currentRotation == ROTATION_0 && nextRotation == ROTATION_3
+        transition = TRANS_0_TO_3;
+    }
+    
+    const SRSKickData& kickData = SRS_KICK_DATA_JLSTZ[transition];
+    
+    for (int i = 0; i < NumOfKickTest; i++) {
+        mCurrentBlock->UpdatePos();
+        if (clockwise) {
+            mCurrentBlock->Rotate();
+        } else {
+            mCurrentBlock->RotateCounterClockwise();
+        }
+        
+        int kickX = kickData.kicks[i].x;
+        int kickY = kickData.kicks[i].y;
+        
+        int newX = originalX + kickX;
+        int newY = originalY - kickY;
+        
+        mCurrentBlock->SetPosition(newX, newY);
+        
+        if (!CheckCollision(mCurrentBlock)) {
+            return true;
+        }
+        
+        mCurrentBlock->rollback();
+    }
+    
+    return false;
 }

@@ -20,7 +20,7 @@ int SetRandNum(int size) {
 
 void Block::Initalize() {
 	type = static_cast<ShapeType>(SetRandNum(SHAPE_COUNT));
-	rotation =  static_cast<RotationState>(SetRandNum(ROTATION_COUNT));
+	rotation = ROTATION_0;
 	currentShape = &modelPointers[type][0];
 }
 
@@ -63,6 +63,10 @@ void Block::Rotate() {
 	rotation = static_cast<RotationState>((rotation + 1) % ROTATION_COUNT);
 }
 
+void Block::RotateCounterClockwise() {
+	rotation = static_cast<RotationState>((rotation + 3) % ROTATION_COUNT);
+}
+
 void Block::rollback()
 {
 	rotation = prevRotate;
@@ -75,6 +79,19 @@ void Block::UpdatePos() {
 	prevRotate = rotation;
 	prevX = x;
 	prevY = y;
+}
+
+void Block::SetPosition(int newX, int newY) {
+	x = newX;
+	y = newY;
+}
+
+RotationState Block::GetNextRotation(bool clockwise) const {
+	if (clockwise) {
+		return static_cast<RotationState>((rotation + 1) % ROTATION_COUNT);
+	} else {
+		return static_cast<RotationState>((rotation + 3) % ROTATION_COUNT);
+	}
 }
 
 void Block::SetTexture(ConsoleColor tex) {
@@ -99,7 +116,6 @@ int Block::GetMatrixSize() const
 
 char Block::GetValue(int i,int j) 
 {
-	currentShape[rotation].mat2[i][j];
 	if(type == SHAPE_O) {
 		return (*currentShape[rotation].mat2)[i][j]; // mat2x2 접근
 	} else if(type == SHAPE_I) {

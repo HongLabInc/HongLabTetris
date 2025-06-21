@@ -33,9 +33,15 @@ public:
 
 
 	void Rotate();
+	void RotateCounterClockwise();
 	void rollback();
 
 	void UpdatePos();
+	
+	void SetPosition(int newX, int newY);
+	ShapeType GetType() const { return type; }
+	RotationState GetRotation() const { return rotation; }
+	RotationState GetNextRotation(bool clockwise = true) const;
 
 
 #pragma region Getter

@@ -24,6 +24,7 @@ public:
     bool IsFull();
     int GetTopRow();
     bool CheckCollision(std::unique_ptr<Block>& block);
+    bool TryRotateWithWallKick(bool clockwise = true);
 
 private:
     void ClearBlockImage();
