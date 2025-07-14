@@ -8,6 +8,7 @@ Button::Button()
     , text(L"Button")
     , mIsHovered(false)
     , mIsPressed(false)
+    , mIsSelected(false)
 {}
 
 Button::Button(InputManager* inputManager, ConsoleFrame* frame)
@@ -15,6 +16,7 @@ Button::Button(InputManager* inputManager, ConsoleFrame* frame)
     , text(L"Button")
     , mIsHovered(false)
     , mIsPressed(false)
+    , mIsSelected(false)
     , mListenerIndex(0)
 {
     if (inputManager) {
@@ -27,7 +29,6 @@ Button::Button(InputManager* inputManager, ConsoleFrame* frame)
 }
 
 Button::~Button() {
-
     if (mInputManager) {
         mInputManager->RemoveMouseListener(mListenerIndex);
     }
@@ -41,7 +42,9 @@ void Button::draw() {
     if (!mFrame) return;
 
     Cell buttonCell{};
+
     buttonCell.SetBackgroundColor(
+        mIsSelected ? ConsoleColor::BrightRed :
         mIsPressed ? ConsoleColor::BrightBlue :
         mIsHovered ? ConsoleColor::BrightCyan :
                     ConsoleColor::BrightGreen
@@ -64,9 +67,10 @@ void Button::draw() {
         textY,
         text,
         static_cast<WORD>(
+        mIsSelected ? ConsoleColor::White :
         mIsPressed ? ConsoleColor::White :
         mIsHovered ? ConsoleColor::BrightYellow :
-        ConsoleColor::BrightGreen
+        ConsoleColor::White
     )
     );
 
@@ -97,8 +101,6 @@ void Button::draw() {
 
     }
 }
-
-
 
 bool Button::contains(int mouseX, int mouseY) const {
     // 절대 좌표 기준으로 계산
@@ -134,6 +136,14 @@ void Button::SetOnMouseUp(std::function<void()> callback) {
 
 void Button::SetOnClick(std::function<void()> callback) {
     onClick = callback;
+}
+
+void Button::SetSelected(bool selected) {
+    mIsSelected = selected;
+}
+
+bool Button::IsSelected() const {
+    return mIsSelected;
 }
 
 void Button::HandleMouseEvent(const MouseEvent& event) {
