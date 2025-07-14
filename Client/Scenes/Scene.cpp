@@ -1,14 +1,14 @@
 #include "Scene.h"
 
 Scene::Scene(
-    ConsoleRenderer& renderer, 
+    ConsoleRenderer& renderer,
     InputManager* inputManager,
     UIManager* uiManager,
     SceneManager* sceneManager)
-    : mRenderer(renderer), 
+    : mRenderer(renderer),
     mInputManager(inputManager),
     mUIManager(uiManager),
-    mSceneManager(sceneManager) 
+    mSceneManager(sceneManager)
 {
     mPendingSceneChange = SceneType::None;
 }

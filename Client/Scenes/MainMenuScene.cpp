@@ -25,9 +25,9 @@ void MainMenuScene::InitializeButtons()
     });
 
     mSingleMode->SetOnClick([this]() {
-        mPendingSceneChange = SceneType::Playing;
+        mSelectedMode = GameModeType::Single;
+        UpdateButtonColors();
     });
-
 
     // 멀티 모드 버튼 이벤트 설정
     mMultiMode->SetOnHoverEnter([this]() {
@@ -35,11 +35,11 @@ void MainMenuScene::InitializeButtons()
     });
 
     mMultiMode->SetOnClick([this]() {
-        mPendingSceneChange = SceneType::Playing;
+        mSelectedMode = GameModeType::Multiplayer;
+        UpdateButtonColors();
     });
 
-
-    
+    UpdateButtonColors();
 }
 
 MainMenuScene::MainMenuScene(
@@ -48,6 +48,7 @@ MainMenuScene::MainMenuScene(
     UIManager* uiManager,
     SceneManager* sceneManager)
     : Scene(renderer, inputManager, uiManager, sceneManager)
+    , mSelectedMode(GameModeType::Single)  // 기본값은 싱글 모드
 {
     mRenderer.Clear();
     mFrame = mRenderer.AddFrame(0, 0, 40, 30);
@@ -63,15 +64,24 @@ MainMenuScene::MainMenuScene(
     }
 
     mFrame->SetText(5, 5, L"Welcome to Tetris!", static_cast<WORD>(ConsoleColor::BrightGreen));
-    mFrame->SetText(5, 6, L"Press Enter to Start", static_cast<WORD>(ConsoleColor::BrightWhite));
+    mFrame->SetText(5, 6, L"Use mouse or arrow keys to select mode", static_cast<WORD>(ConsoleColor::BrightWhite));
+    mFrame->SetText(5, 7, L"Press Enter to Start", static_cast<WORD>(ConsoleColor::BrightWhite));
 }
 
 void MainMenuScene::Update(float deltaTime) {
 
-    // Enter 키 입력 처리
+    // 키보드 입력 처리
     int key = mInputManager->DequeueInput();
     if (key == VK_RETURN) {
         mPendingSceneChange = SceneType::Playing;
+    }
+    else if (key == VK_UP || key == VK_LEFT) {
+        mSelectedMode = GameModeType::Single;
+        UpdateButtonColors();
+    }
+    else if (key == VK_DOWN || key == VK_RIGHT) {
+        mSelectedMode = GameModeType::Multiplayer;
+        UpdateButtonColors();
     }
 
     // 버튼들의 Update 호출 추가
@@ -85,4 +95,8 @@ void MainMenuScene::Draw() {
     mRenderer.Render();
 }
 
-   
+void MainMenuScene::UpdateButtonColors() {
+    mSingleMode->SetSelected(mSelectedMode == GameModeType::Single);
+    mMultiMode->SetSelected(mSelectedMode == GameModeType::Multiplayer);
+}
+

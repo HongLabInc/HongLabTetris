@@ -17,7 +17,7 @@ public:
     virtual void Draw() = 0;
 
     SceneType GetPendingSceneChange() const;
-    
+
     void ClearPendingSceneChange();
 
 protected:

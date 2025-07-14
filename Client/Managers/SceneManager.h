@@ -3,6 +3,7 @@
 #include <memory>
 #include "../Scenes/Scene.h"
 #include "../Scenes/SceneType.h"
+#include "../GameModeType.h"
 #include "../ConsoleRenderer.h"
 #include "InputManager.h"
 #include "UIManager.h"
@@ -21,6 +22,7 @@ public:
 
     // Scene 전환 요청
     void RequestSceneChange(SceneType type);
+    void RequestGameScene(GameModeType gameMode);
 
     // 현재 Scene 업데이트/렌더링
     void Update(float deltaTime);
