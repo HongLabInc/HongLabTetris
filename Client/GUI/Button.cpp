@@ -8,6 +8,7 @@ Button::Button()
     , text(L"Button")
     , mIsHovered(false)
     , mIsPressed(false)
+    , mIsSelected(false)
 {}
 
 Button::Button(InputManager* inputManager, ConsoleFrame* frame)
@@ -15,6 +16,7 @@ Button::Button(InputManager* inputManager, ConsoleFrame* frame)
     , text(L"Button")
     , mIsHovered(false)
     , mIsPressed(false)
+    , mIsSelected(false)
     , mListenerIndex(0)
 {
     if (inputManager) {
@@ -27,7 +29,6 @@ Button::Button(InputManager* inputManager, ConsoleFrame* frame)
 }
 
 Button::~Button() {
-
     if (mInputManager) {
         mInputManager->RemoveMouseListener(mListenerIndex);
     }
@@ -41,7 +42,9 @@ void Button::draw() {
     if (!mFrame) return;
 
     Cell buttonCell{};
+
     buttonCell.SetBackgroundColor(
+        mIsSelected ? ConsoleColor::BrightRed :
         mIsPressed ? ConsoleColor::BrightBlue :
         mIsHovered ? ConsoleColor::BrightCyan :
                     ConsoleColor::BrightGreen
@@ -64,41 +67,15 @@ void Button::draw() {
         textY,
         text,
         static_cast<WORD>(
+        mIsSelected ? ConsoleColor::White :
         mIsPressed ? ConsoleColor::White :
         mIsHovered ? ConsoleColor::BrightYellow :
-        ConsoleColor::BrightGreen
+        ConsoleColor::White
     )
     );
 
-    if (mInputManager) {
-        POINT mousePos = mInputManager->GetMousePosition();
-        POINT framePos = {
-            mousePos.x - mFrame->GetX(),
-            mousePos.y - mFrame->GetY()
-        };
-        mFrame->SetText(0, 1,
-            L"Mouse: screen(" + std::to_wstring(mousePos.x) + L"," + std::to_wstring(mousePos.y) +
-            L") frame(" + std::to_wstring(framePos.x) + L"," + std::to_wstring(framePos.y) + L")",
-            static_cast<WORD>(ConsoleColor::White));
 
-        mFrame->SetText(0, 2,
-            L"Button: pos(" + std::to_wstring(posX) + L"," + std::to_wstring(posY) +
-            L") size(" + std::to_wstring(width) + L"," + std::to_wstring(height) +
-            L") hover:" + (mIsHovered ? L"Y" : L"N"),
-            static_cast<WORD>(ConsoleColor::White));
-
-        mFrame->SetText(0, 3,
-             L"Button: pos(" + std::to_wstring(posX) + L"," + std::to_wstring(posY) +
-            L") size(" + std::to_wstring(width) + L"," + std::to_wstring(height) +
-            L") pressed:" + (mIsPressed ? L"Y" : L"N"),
-            static_cast<WORD>(ConsoleColor::White));
-
-
-
-    }
 }
-
-
 
 bool Button::contains(int mouseX, int mouseY) const {
     // 절대 좌표 기준으로 계산
@@ -136,6 +113,14 @@ void Button::SetOnClick(std::function<void()> callback) {
     onClick = callback;
 }
 
+void Button::SetSelected(bool selected) {
+    mIsSelected = selected;
+}
+
+bool Button::IsSelected() const {
+    return mIsSelected;
+}
+
 void Button::HandleMouseEvent(const MouseEvent& event) {
     if (!mFrame) return;
 
@@ -143,12 +128,6 @@ void Button::HandleMouseEvent(const MouseEvent& event) {
         event.position.x - mFrame->GetX(),
         event.position.y - mFrame->GetY()
     };
-
-    mFrame->SetText(0, 3,
-       L"HandleEvent: pos(" + std::to_wstring(framePos.x) + L"," + std::to_wstring(framePos.y) +
-       L") button:" + std::to_wstring(static_cast<int>(event.button)) +
-       L" pressed:" + (event.isPressed ? L"Y" : L"N"),
-       static_cast<WORD>(ConsoleColor::White));
 
     bool isInside = contains(framePos.x, framePos.y);
 

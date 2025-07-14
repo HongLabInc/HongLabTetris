@@ -15,24 +15,27 @@ SceneManager::SceneManager(ConsoleRenderer& renderer, InputManager* inputManager
 
 void SceneManager::RequestSceneChange(SceneType type)
 {
-    // 기존 Scene 제거
     mCurrentScene.reset();
 
-    // 새로운 Scene 생성
     switch (type) {
     case SceneType::MainMenu:
-    mCurrentScene = std::make_unique<MainMenuScene>(mRenderer, mInputManager, mUIManager, this);
-    break;
+        mCurrentScene = std::make_unique<MainMenuScene>(mRenderer, mInputManager, mUIManager, this);
+        break;
     case SceneType::Playing:
-	mCurrentScene = std::make_unique<PlayingScene>(mRenderer, mInputManager, mUIManager, this, GameModeType::Single);
-    break;
+        mCurrentScene = std::make_unique<PlayingScene>(mRenderer, mInputManager, mUIManager, this, GameModeType::Single);
+        break;
     case SceneType::GameOver:
-	mCurrentScene = std::make_unique<GameOverScene>(mRenderer, mInputManager, mUIManager, this);
-    break;
+        mCurrentScene = std::make_unique<GameOverScene>(mRenderer, mInputManager, mUIManager, this);
+        break;
     default:
-        //throw std::runtime_error("Unknown SceneType requested");
-    break;
+        break;
     }
+}
+
+void SceneManager::RequestGameScene(GameModeType gameMode)
+{
+    mCurrentScene.reset();
+    mCurrentScene = std::make_unique<PlayingScene>(mRenderer, mInputManager, mUIManager, this, gameMode);
 }
 
 void SceneManager::Update(float deltaTime)
@@ -44,7 +47,17 @@ void SceneManager::Update(float deltaTime)
         SceneType pendingChange = mCurrentScene->GetPendingSceneChange();
         if (pendingChange != SceneType::None) {
             mCurrentScene->ClearPendingSceneChange();
-            RequestSceneChange(pendingChange);
+
+            if (pendingChange == SceneType::Playing) {
+                auto* mainMenuScene = dynamic_cast<MainMenuScene*>(mCurrentScene.get());
+                if (mainMenuScene) {
+                    RequestGameScene(mainMenuScene->GetSelectedMode());
+                } else {
+                    RequestGameScene(GameModeType::Single);
+                }
+            } else {
+                RequestSceneChange(pendingChange);
+            }
         }
     }
 }

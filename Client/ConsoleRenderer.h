@@ -7,6 +7,15 @@ class ConsoleFrame;
 class ConsoleRenderer
 {
 public:
+    static constexpr WORD COLOR_WHITE = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+    static constexpr WORD COLOR_BLACK = 0;
+    static constexpr WORD COLOR_RED = FOREGROUND_RED;
+    static constexpr WORD COLOR_GREEN = FOREGROUND_GREEN;
+    static constexpr WORD COLOR_BLUE = FOREGROUND_BLUE;
+    static constexpr WORD COLOR_YELLOW = FOREGROUND_RED | FOREGROUND_GREEN;
+    static constexpr WORD COLOR_CYAN = FOREGROUND_GREEN | FOREGROUND_BLUE;
+    static constexpr WORD COLOR_MAGENTA = FOREGROUND_RED | FOREGROUND_BLUE;
+
     ConsoleRenderer(int width, int height, float frameRate);
     ~ConsoleRenderer();
 
@@ -46,6 +55,7 @@ public:
 
 private:
     void RenderFrame(ConsoleFrame* frame);
+    void SetCursorPosition(int x, int y);
 
     int mWidth;
     int mHeight;

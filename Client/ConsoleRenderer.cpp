@@ -12,8 +12,6 @@ ConsoleRenderer::ConsoleRenderer(int width, int height, float frameRate)
     mActualWidth = mWidth * CELL_WIDTH;
 
     mConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD bufferSize = {(SHORT)mActualWidth, (SHORT)mHeight};
-    SetConsoleScreenBufferSize(mConsoleHandle, bufferSize);
 
     CONSOLE_CURSOR_INFO cursorInfo = {1, FALSE};
     SetConsoleCursorInfo(mConsoleHandle, &cursorInfo);
@@ -116,6 +114,13 @@ void ConsoleRenderer::RenderFrame(ConsoleFrame* frame)
 void ConsoleRenderer::Render()
 {
 	assert(mMainFrame != nullptr && "MainFrame is nullptr");
+
+    SetCursorPosition(0, 0);
+
+    for (int i = 0; i < mActualWidth * mHeight; ++i) {
+        mBuffer[i] = {L' ', COLOR_WHITE};
+    }
+
     RenderFrame(mMainFrame);
 
     for (const auto& frame : mFrames)
@@ -128,4 +133,10 @@ void ConsoleRenderer::Render()
     COORD bufferCoord = {0, 0};
 
     WriteConsoleOutputW(mConsoleHandle, mBuffer, bufferSize, bufferCoord, &writeRegion);
+}
+
+void ConsoleRenderer::SetCursorPosition(int x, int y)
+{
+    COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+    ::SetConsoleCursorPosition(mConsoleHandle, pos);
 }

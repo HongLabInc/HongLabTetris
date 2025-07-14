@@ -28,6 +28,10 @@ public:
     void SetOnMouseUp(std::function<void()> callback);
     void SetOnClick(std::function<void()> callback);
 
+    // 선택 상태 관련
+    void SetSelected(bool selected);
+    bool IsSelected() const;
+
 private:
     void HandleMouseEvent(const MouseEvent& event);
 
@@ -44,6 +48,7 @@ private:
     // 상태 플래그
     bool mIsHovered;
     bool mIsPressed;
+    bool mIsSelected;
 
 };
 
