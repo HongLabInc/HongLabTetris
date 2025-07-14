@@ -74,32 +74,7 @@ void Button::draw() {
     )
     );
 
-    if (mInputManager) {
-        POINT mousePos = mInputManager->GetMousePosition();
-        POINT framePos = {
-            mousePos.x - mFrame->GetX(),
-            mousePos.y - mFrame->GetY()
-        };
-        mFrame->SetText(0, 1,
-            L"Mouse: screen(" + std::to_wstring(mousePos.x) + L"," + std::to_wstring(mousePos.y) +
-            L") frame(" + std::to_wstring(framePos.x) + L"," + std::to_wstring(framePos.y) + L")",
-            static_cast<WORD>(ConsoleColor::White));
 
-        mFrame->SetText(0, 2,
-            L"Button: pos(" + std::to_wstring(posX) + L"," + std::to_wstring(posY) +
-            L") size(" + std::to_wstring(width) + L"," + std::to_wstring(height) +
-            L") hover:" + (mIsHovered ? L"Y" : L"N"),
-            static_cast<WORD>(ConsoleColor::White));
-
-        mFrame->SetText(0, 3,
-             L"Button: pos(" + std::to_wstring(posX) + L"," + std::to_wstring(posY) +
-            L") size(" + std::to_wstring(width) + L"," + std::to_wstring(height) +
-            L") pressed:" + (mIsPressed ? L"Y" : L"N"),
-            static_cast<WORD>(ConsoleColor::White));
-
-
-
-    }
 }
 
 bool Button::contains(int mouseX, int mouseY) const {
@@ -153,12 +128,6 @@ void Button::HandleMouseEvent(const MouseEvent& event) {
         event.position.x - mFrame->GetX(),
         event.position.y - mFrame->GetY()
     };
-
-    mFrame->SetText(0, 3,
-       L"HandleEvent: pos(" + std::to_wstring(framePos.x) + L"," + std::to_wstring(framePos.y) +
-       L") button:" + std::to_wstring(static_cast<int>(event.button)) +
-       L" pressed:" + (event.isPressed ? L"Y" : L"N"),
-       static_cast<WORD>(ConsoleColor::White));
 
     bool isInside = contains(framePos.x, framePos.y);
 

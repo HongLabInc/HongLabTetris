@@ -9,14 +9,14 @@ void MainMenuScene::InitializeButtons()
     int centerY = screenHeight / 2;
 
     // Single 버튼 (위쪽)
-    mSingleMode->SetPosition(centerX, centerY - 3);
+    mSingleMode->SetPosition(centerX, centerY - 5);
     mSingleMode->resize(10, 3);
     mSingleMode->setText(L"Single");
-    
+
 
     // Multi 버튼 (아래쪽)
-    mMultiMode->SetPosition(centerX, centerY + 3);  // 중앙 기준
-    mMultiMode->resize(10, 3);  // 여백 포함 크기
+    mMultiMode->SetPosition(centerX, centerY - 1);
+    mMultiMode->resize(10, 3);
     mMultiMode->setText(L"Multi");
 
     // 싱글 모드 버튼 이벤트 설정
@@ -63,9 +63,9 @@ MainMenuScene::MainMenuScene(
         // 적절한 에러 처리
     }
 
-    mFrame->SetText(5, 5, L"Welcome to Tetris!", static_cast<WORD>(ConsoleColor::BrightGreen));
-    mFrame->SetText(5, 6, L"Use mouse or arrow keys to select mode", static_cast<WORD>(ConsoleColor::BrightWhite));
-    mFrame->SetText(5, 7, L"Press Enter to Start", static_cast<WORD>(ConsoleColor::BrightWhite));
+    mFrame->SetText(5, 2, L"Welcome to Tetris!", static_cast<WORD>(ConsoleColor::BrightGreen));
+    mFrame->SetText(5, 3, L"Use mouse or arrow keys to select mode", static_cast<WORD>(ConsoleColor::BrightWhite));
+    mFrame->SetText(5, 4, L"Press Enter to Start", static_cast<WORD>(ConsoleColor::BrightWhite));
 }
 
 void MainMenuScene::Update(float deltaTime) {
