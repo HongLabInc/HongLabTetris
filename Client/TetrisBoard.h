@@ -11,12 +11,12 @@
 class TetrisBoard
 {
 public:
-    TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height,InputManager* im,EventManager* em = nullptr);
+    TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height, InputManager* im,EventManager* em = nullptr);
     ~TetrisBoard();
 
     void InitBoard(int x,int y,int width,int height);
     void Update(float deltaTime);
-    void HandleInput();
+    virtual void HandleInput();
     void MoveBlockDown(float deltaTime);
     void UpdateGhostBlock();
     void Draw();
@@ -25,8 +25,11 @@ public:
     int GetTopRow();
     bool CheckCollision(std::unique_ptr<Block>& block);
     bool TryRotateWithWallKick(bool clockwise = true);
+    void SetFallSpeed(float speed);
 
-private:
+    int GetScore() const { return mScore; }
+
+protected:
     void ClearBlockImage();
 	void DrawBlock(ConsoleFrame* frame, std::unique_ptr<Block>& block, const Cell & blockCell);
     void LockBlock();
@@ -47,6 +50,9 @@ private:
     static constexpr int mContinuousInputDelayFrames = 24;
     static constexpr int mQueueFrameSize = 8;
 
+	static constexpr float mFallMinSpeed = 1.0f;
+    static constexpr float mFallMaxSpeed = 10.0f;
+
     static const std::array<int, 100> scoreTable;
 
     int mWidth;
@@ -56,6 +62,7 @@ private:
     int mContinuousInputFramesLeft = 0;
 
     float mTimeUntilDropSeconds = 0.0f;
+    float mFallSpeed = 1.0f;
 
     int mScore = 0;
     int mCombo = 0;

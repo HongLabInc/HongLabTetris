@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "../GameModeType.h"
 #include "../TetrisBoard.h"
+#include "../Managers/GameManager.h"
 
 class PlayingScene: public Scene {
 public:
@@ -18,9 +19,6 @@ public:
     void Draw() override;
 
 private:
-    void SetupSingleMode();
-    void SetupMultiplayerMode();
-
-    std::vector<std::shared_ptr<TetrisBoard>> mBoards;
+    GameManager mGameManager;
     GameModeType mCurrentMode;
 };

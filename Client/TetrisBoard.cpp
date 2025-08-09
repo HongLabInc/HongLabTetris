@@ -150,7 +150,7 @@ void TetrisBoard::MoveBlockDown(float deltaTime)
 {
 	float currentInterval = mIsSoftDropping ? mSoftDropIntervalSeconds : mDropIntervalSeconds;
 	
-	mTimeUntilDropSeconds += deltaTime;
+	mTimeUntilDropSeconds += deltaTime * mFallSpeed;
 	if (mIsBlockReadyToLock || mTimeUntilDropSeconds >= currentInterval)
 	{
 		// Update Basic Move
@@ -484,4 +484,9 @@ bool TetrisBoard::TryRotateWithWallKick(bool clockwise)
     }
     
     return false;
+}
+
+void TetrisBoard::SetFallSpeed(float speed)
+{
+    mFallSpeed = std::clamp(speed, mFallMinSpeed, mFallMaxSpeed);
 }

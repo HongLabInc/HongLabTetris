@@ -4,39 +4,25 @@ PlayingScene::PlayingScene(
     ConsoleRenderer & renderer, 
     InputManager * im,
     UIManager* um,
-    SceneManager * sm, 
+	SceneManager* sm,
     GameModeType mode)
-    : Scene(renderer, im, um, sm), mCurrentMode(mode) {
+	: Scene(renderer, im, um, sm)
+	, mGameManager(renderer, sm, im)
+    , mCurrentMode(mode)
+{
 
 	mRenderer.Clear();
 	mFrame = mRenderer.AddFrame(10, 5, 40, 30);
-    switch (mCurrentMode) {
-    case GameModeType::Single: SetupSingleMode(); break;
-    case GameModeType::Multiplayer: SetupMultiplayerMode(); break;
-    }
+
+    // 게임 시작
+    mGameManager.Start(mCurrentMode);
 }
 
 void PlayingScene::Update(float deltaTime) {
-    // 보드 업데이트
-    for (auto& board : mBoards) {
-        board->Update(deltaTime);
-        if (board->IsFull()) {
-            // Game Over
-            mSceneManager->RequestSceneChange(SceneType::GameOver);
-        }
-    }
+    mGameManager.Update(deltaTime);
 }
 
 void PlayingScene::Draw() {
-    for (auto& board : mBoards) {
-        board->Draw();
-    }
+    mGameManager.Draw();
     mRenderer.Render();
-}
-
-void PlayingScene::SetupSingleMode() { /*...*/
-    mBoards.emplace_back(std::make_shared<TetrisBoard>(mRenderer, 3, 3, 12, 24, mInputManager));
-}
-
-void PlayingScene::SetupMultiplayerMode() { /*...*/
 }
