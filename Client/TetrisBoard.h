@@ -25,6 +25,7 @@ public:
     int GetTopRow();
     bool CheckCollision(std::unique_ptr<Block>& block);
     bool TryRotateWithWallKick(bool clockwise = true);
+    void SetDropSpeed(float speed);
 
 private:
     void ClearBlockImage();
@@ -47,6 +48,9 @@ private:
     static constexpr int mContinuousInputDelayFrames = 24;
     static constexpr int mQueueFrameSize = 8;
 
+	static constexpr float mFallMinSpeed = 1.0f;
+    static constexpr float mFallMaxSpeed = 10.0f;
+
     static const std::array<int, 100> scoreTable;
 
     int mWidth;
@@ -56,6 +60,7 @@ private:
     int mContinuousInputFramesLeft = 0;
 
     float mTimeUntilDropSeconds = 0.0f;
+    float mFallSpeed = 1.0f;
 
     int mScore = 0;
     int mCombo = 0;
