@@ -11,12 +11,12 @@
 class TetrisBoard
 {
 public:
-    TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height,InputManager* im,EventManager* em = nullptr);
+    TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height, InputManager* im,EventManager* em = nullptr);
     ~TetrisBoard();
 
     void InitBoard(int x,int y,int width,int height);
     void Update(float deltaTime);
-    void HandleInput();
+    virtual void HandleInput();
     void MoveBlockDown(float deltaTime);
     void UpdateGhostBlock();
     void Draw();
@@ -25,9 +25,11 @@ public:
     int GetTopRow();
     bool CheckCollision(std::unique_ptr<Block>& block);
     bool TryRotateWithWallKick(bool clockwise = true);
-    void SetDropSpeed(float speed);
+    void SetFallSpeed(float speed);
 
-private:
+    int GetScore() const { return mScore; }
+
+protected:
     void ClearBlockImage();
 	void DrawBlock(ConsoleFrame* frame, std::unique_ptr<Block>& block, const Cell & blockCell);
     void LockBlock();

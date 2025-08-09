@@ -486,7 +486,7 @@ bool TetrisBoard::TryRotateWithWallKick(bool clockwise)
     return false;
 }
 
-void TetrisBoard::SetDropSpeed(float speed)
+void TetrisBoard::SetFallSpeed(float speed)
 {
     mFallSpeed = std::clamp(speed, mFallMinSpeed, mFallMaxSpeed);
 }

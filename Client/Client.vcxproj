@@ -151,6 +151,7 @@
     <ClCompile Include="ConsoleRenderer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Managers\EventManager.cpp" />
+    <ClCompile Include="Managers\GameManager.cpp" />
     <ClCompile Include="Managers\UIManager.cpp" />
     <ClCompile Include="Scenes\GameOverScene.cpp" />
     <ClCompile Include="Scenes\GameScene.cpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Managers\SceneManager.cpp" />
     <ClCompile Include="TetrisBoard.cpp" />
+    <ClCompile Include="TetrisBoardAI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
@@ -175,6 +177,7 @@
     <ClInclude Include="Managers\ConsoleColor.h" />
     <ClInclude Include="Managers\EventManager.h" />
     <ClInclude Include="GameModeType.h" />
+    <ClInclude Include="Managers\GameManager.h" />
     <ClInclude Include="Managers\UIManager.h" />
     <ClInclude Include="Scenes\GameOverScene.h" />
     <ClInclude Include="Scenes\GameScene.h" />
@@ -187,6 +190,7 @@
     <ClInclude Include="Managers\SceneManager.h" />
     <ClInclude Include="Scenes\SceneType.h" />
     <ClInclude Include="TetrisBoard.h" />
+    <ClInclude Include="TetrisBoardAI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
