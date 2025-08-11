@@ -12,7 +12,7 @@ class TetrisBoard
 {
 public:
     TetrisBoard(ConsoleRenderer& renderer, int x, int y, int width, int height, InputManager* im,EventManager* em = nullptr);
-    ~TetrisBoard();
+    virtual ~TetrisBoard();
 
     void InitBoard(int x,int y,int width,int height);
     void Update(float deltaTime);
