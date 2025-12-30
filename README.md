@@ -1,5 +1,8 @@
 # [홍정모 연구소](https://honglab.co.kr/) 프로젝트
 
+**프로젝트 종료** 하였습니다.
+- 기본 기능들은 구현이 매우 빠르게 진행되었습니다. 경쟁 플레이를 위한 AI 만들기부터 진행이 느려졌습니다. 나중에 AI를 중심으로 다른 프로젝트를 진행해보면 좋을 것 같습니다.
+
 ## 함께 만드는 테트리스 ([디스코드](https://discord.com/channels/1126579018238545990/1324896413838082169))
 
 [![](https://img.youtube.com/vi/7Burx7zTn6E/hqdefault.jpg)](https://www.youtube.com/watch?v=7Burx7zTn6E)
